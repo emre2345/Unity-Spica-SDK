@@ -1,6 +1,7 @@
 using UniRx;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity.Models;
 
 namespace SpicaSDK.Services
@@ -30,9 +31,12 @@ namespace SpicaSDK.Services
 
         public bool IsAvailable { get; private set; }
 
-        public string BucketUrl(string bucketId) => $"{rootUrl}/api/bucket/{bucketId}?{Identity.Token}";
+        public string BucketUrl(Id bucketId) => $"{rootUrl}/api/bucket/{bucketId}?{Identity.Token}";
 
-        public string BucketDataUrl(string bucketId) => $"{rootUrl}/api/bucket/{bucketId}/data?{Identity.Token}";
+        public string BucketDataUrl(Id bucketId) => $"{rootUrl}/api/bucket/{bucketId}/data?{Identity.Token}";
+
+        public string BucketDataDocumentUrl(Id bucketId, Id documentId) =>
+            $"{rootUrl}/api/bucket/{bucketId}/data/{documentId}?{Identity.Token}";
 
         public string IdentityUrl => $"{rootUrl}/passport/identify";
 

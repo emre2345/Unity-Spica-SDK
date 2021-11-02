@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity.Models;
 
 namespace SpicaSDK.Interfaces
@@ -9,8 +10,10 @@ namespace SpicaSDK.Interfaces
         UniTask<bool> Initialize();
         bool IsAvailable { get; }
 
-        string BucketUrl(string bucketId);
-        string BucketDataUrl(string bucketId);
+        string BucketUrl(Id bucketId);
+        string BucketDataUrl(Id bucketId);
+
+        string BucketDataDocumentUrl(Id bucketId, Id documentId);
 
         string IdentityUrl { get; }
         

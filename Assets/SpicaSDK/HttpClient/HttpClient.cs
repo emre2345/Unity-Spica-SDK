@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace SpicaSDK
 {
-    public class HttpRequest : IHttpClient
+    public class HttpClient : IHttpClient
     {
         UniTask<Response> IHttpClient.Post(Request request)
         {

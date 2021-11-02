@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SpicaSDK
 {
     public readonly struct Request
