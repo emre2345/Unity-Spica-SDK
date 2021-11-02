@@ -23,30 +23,6 @@
                 "position": "right"
             }
         },
-        "x": {
-            "type": "number",
-            "title": "x",
-            "description": "Description of the x input",
-            "options": {
-                "position": "bottom"
-            }
-        },
-        "y": {
-            "type": "number",
-            "title": "y",
-            "description": "Description of the y input",
-            "options": {
-                "position": "bottom"
-            }
-        },
-        "z": {
-            "type": "number",
-            "title": "z",
-            "description": "Description of the z input",
-            "options": {
-                "position": "bottom"
-            }
-        }
     },
     "acl": {
         "write": "true==true",
