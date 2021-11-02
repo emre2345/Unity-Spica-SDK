@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Cysharp.Threading.Tasks;
@@ -107,11 +108,15 @@ namespace SpicaSDK.Tests.Editor
 
                 var firstData = TestDatas[0];
 
-                client.Get(new Request()).ReturnsForAnyArgs(info => new UniTask<Response>(
-                    new Response(HttpStatusCode.OK, firstData.ToString())));
+                client.Get(new Request(server.BucketDataDocumentUrl(new Id(TestBucketId), firstData.Id)))
+                    .Returns(info => new UniTask<Response>(
+                        new Response(HttpStatusCode.OK, firstData.ToString())));
 
                 BucketService bucketService = new BucketService(server, client);
-                var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
+                var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(TestBucketId),
+                    new Document(firstData.Id,
+                        new Document.DocumentOptions(new Dictionary<string, string>(0),
+                            new Dictionary<string, string>(0))));
 
                 Assert.IsTrue(data.Id.Equals(firstData.Id));
             });

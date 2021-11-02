@@ -45,9 +45,11 @@ namespace SpicaSDK.Services
                 this.httpClient = httpClient;
             }
 
-            public async UniTask<T> Get<T>(Id bucketId, Id documentId)
+            public async UniTask<T> Get<T>(Id bucketId, Document document)
             {
-                var response = await httpClient.Get(new Request(server.BucketDataDocumentUrl(bucketId, documentId)));
+                var response = await httpClient.Get(new Request(server.BucketDataDocumentUrl(bucketId, document.Id),
+                    document.Options.QueryString,
+                    document.Options.Headers));
 
                 if (ResponseValidator.Validate(response))
                     return JsonConvert.DeserializeObject<T>(response.Text);
