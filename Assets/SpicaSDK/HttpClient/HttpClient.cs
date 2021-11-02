@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
@@ -10,15 +11,33 @@ namespace SpicaSDK
     {
         UniTask<Response> IHttpClient.Post(Request request)
         {
-            return CreateRequest(() => UnityWebRequest.Post(request.Url, request.Payload));
+            return CreateAndSendRequest(() =>
+            {
+                var req = UnityWebRequest.Post(request.Url, request.Payload);
+                SetHeaders(req, request.Headers);
+                return req;
+            });
         }
 
         UniTask<Response> IHttpClient.Get(Request request)
         {
-            return CreateRequest(() => UnityWebRequest.Get(request.Url));
+            return CreateAndSendRequest(() =>
+            {
+                var req = UnityWebRequest.Get($"{request.Url}&{request.Payload}");
+                SetHeaders(req, request.Headers);
+                return req;
+            });
         }
 
-        private async UniTask<Response> CreateRequest(Func<UnityWebRequest> factory)
+        private void SetHeaders(UnityWebRequest request, Dictionary<string, string> headers)
+        {
+            foreach (var requestHeader in headers)
+            {
+                request.SetRequestHeader(requestHeader.Key, requestHeader.Value);
+            }
+        }
+
+        private async UniTask<Response> CreateAndSendRequest(Func<UnityWebRequest> factory)
         {
             var req = factory();
             var operation = await req.SendWebRequest();
