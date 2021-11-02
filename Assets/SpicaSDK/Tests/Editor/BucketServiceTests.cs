@@ -113,12 +113,26 @@ namespace SpicaSDK.Tests.Editor
                         new Response(HttpStatusCode.OK, firstData.ToString())));
 
                 BucketService bucketService = new BucketService(server, client);
-                var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(TestBucketId),
-                    new Document(firstData.Id,
-                        new Document.DocumentOptions(new Dictionary<string, string>(0),
-                            new Dictionary<string, string>(0))));
+                var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(TestBucketId), firstData.Id,
+                    new QueryParams());
 
                 Assert.IsTrue(data.Id.Equals(firstData.Id));
+            });
+
+            [UnityTest]
+            public IEnumerator GetAll() => UniTask.ToCoroutine(async () =>
+            {
+                ISpicaServer server = Substitute.For<ISpicaServer>();
+                IHttpClient client = Substitute.For<IHttpClient>();
+
+                client.Get(new Request(server.BucketDataUrl(new Id(TestBucketId)))).Returns(info =>
+                    new UniTask<Response>(new Response(HttpStatusCode.OK, TestBucketData)));
+
+                BucketService bucketService = new BucketService(server, client);
+                var data = await bucketService.Data.GetAll<TestBucketDataModel>(new Id(TestBucketId),
+                    new QueryParams());
+
+                Assert.IsTrue(data.Length == 3);
             });
         }
     }

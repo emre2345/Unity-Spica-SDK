@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Services.Exceptions;
@@ -7,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace SpicaSDK.Services
 {
-    public partial class BucketService : ISpicaService
+    public class BucketService : ISpicaService
     {
         private ISpicaServer server;
         private IHttpClient httpClient;
@@ -45,14 +46,26 @@ namespace SpicaSDK.Services
                 this.httpClient = httpClient;
             }
 
-            public async UniTask<T> Get<T>(Id bucketId, Document document)
+            public async UniTask<T> Get<T>(Id bucketId, Id documentId, QueryParams queryParams)
             {
-                var response = await httpClient.Get(new Request(server.BucketDataDocumentUrl(bucketId, document.Id),
-                    document.Options.QueryString,
-                    document.Options.Headers));
+                var response = await httpClient.Get(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                    queryParams.QueryString,
+                    new Dictionary<string, string>(0)));
 
                 if (ResponseValidator.Validate(response))
                     return JsonConvert.DeserializeObject<T>(response.Text);
+
+                throw new SpicaServerException();
+            }
+
+            public async UniTask<T[]> GetAll<T>(Id bucketId, QueryParams queryParams)
+            {
+                var response = await httpClient.Get(new Request(server.BucketDataUrl(bucketId),
+                    queryParams.QueryString,
+                    new Dictionary<string, string>(0)));
+
+                if (ResponseValidator.Validate(response))
+                    return JsonConvert.DeserializeObject<T[]>(response.Text);
 
                 throw new SpicaServerException();
             }
