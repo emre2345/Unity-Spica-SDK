@@ -8,5 +8,9 @@ namespace SpicaSDK.Interfaces
         UniTask<Response> Get(Request request);
 
         UniTask<Response> Post(Request request);
+
+        UniTask<Response> Patch(Request request);
+
+        UniTask<Response> Delete(Request request);
     }
 }

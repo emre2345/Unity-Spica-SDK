@@ -5,6 +5,7 @@ namespace SpicaSDK
 {
     public class QueryParams
     {
+        public static string Empty => string.Empty;
         public Dictionary<string, string> Value { get; private set; }
 
         public QueryParams() : this(16)
