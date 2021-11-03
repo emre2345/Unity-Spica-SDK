@@ -19,6 +19,16 @@ namespace SpicaSDK
             });
         }
 
+        public UniTask<Response> Patch(Request request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UniTask<Response> Delete(Request request)
+        {
+            throw new NotImplementedException();
+        }
+
         UniTask<Response> IHttpClient.Get(Request request)
         {
             return CreateAndSendRequest(() =>

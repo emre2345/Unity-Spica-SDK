@@ -69,6 +69,42 @@ namespace SpicaSDK.Services
 
                 throw new SpicaServerException();
             }
+
+            public async UniTask<T> Insert<T>(Id bucketId, T document)
+            {
+                var response = await httpClient.Post(new Request(server.BucketDataUrl(bucketId),
+                    JsonConvert.SerializeObject(document),
+                    new Dictionary<string, string>(0)));
+
+                if (ResponseValidator.Validate(response))
+                    return JsonConvert.DeserializeObject<T>(response.Text);
+
+                throw new SpicaServerException();
+            }
+
+            public async UniTask<T> Patch<T>(Id bucketId, Id documentId, T document)
+            {
+                var response = await httpClient.Patch(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                    JsonConvert.SerializeObject(document),
+                    new Dictionary<string, string>(0)));
+
+                if (ResponseValidator.Validate(response))
+                    return JsonConvert.DeserializeObject<T>(response.Text);
+
+                throw new SpicaServerException();
+            }
+
+            public async UniTask<bool> Remove(Id bucketId, Id documentId)
+            {
+                var response = await httpClient.Delete(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                    string.Empty,
+                    new Dictionary<string, string>(0)));
+
+                if (ResponseValidator.Validate(response))
+                    return true;
+
+                throw new SpicaServerException();
+            }
         }
 
         public class RealtimeService : ISpicaService

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Cysharp.Threading.Tasks;
@@ -17,7 +16,7 @@ using UnityEngine.TestTools;
 
 namespace SpicaSDK.Tests.Editor
 {
-    public class BucketServiceTests
+    public partial class BucketServiceTests
     {
         private static string TestBucketDataAsJson =>
             File.ReadAllText($"{Application.dataPath}/SpicaSDK/Tests/Editor/TestAssets/Bucket.txt");
@@ -75,65 +74,5 @@ namespace SpicaSDK.Tests.Editor
             Assert.NotNull(bucket);
             Assert.IsTrue(bucketId.Equals(bucket.Id));
         });
-
-        public class DataTests
-        {
-            private class TestBucketDataModel
-            {
-                public readonly Id Id;
-                public readonly string Title;
-                public readonly string Description;
-
-                public TestBucketDataModel(string _id, string title, string description)
-                {
-                    Id = new Id(_id);
-                    Title = title;
-                    Description = description;
-                }
-
-                public override string ToString()
-                {
-                    return $"{{\"_id\": \"{Id}\", \"title\": \"{Title}\", \"description\": \"{Description}\"}}";
-                }
-            }
-
-            private TestBucketDataModel[] TestDatas =>
-                JsonConvert.DeserializeObject<TestBucketDataModel[]>(TestBucketData);
-
-            [UnityTest]
-            public IEnumerator Get() => UniTask.ToCoroutine(async delegate
-            {
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient client = Substitute.For<IHttpClient>();
-
-                var firstData = TestDatas[0];
-
-                client.Get(new Request(server.BucketDataDocumentUrl(new Id(TestBucketId), firstData.Id)))
-                    .Returns(info => new UniTask<Response>(
-                        new Response(HttpStatusCode.OK, firstData.ToString())));
-
-                BucketService bucketService = new BucketService(server, client);
-                var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(TestBucketId), firstData.Id,
-                    new QueryParams());
-
-                Assert.IsTrue(data.Id.Equals(firstData.Id));
-            });
-
-            [UnityTest]
-            public IEnumerator GetAll() => UniTask.ToCoroutine(async () =>
-            {
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient client = Substitute.For<IHttpClient>();
-
-                client.Get(new Request(server.BucketDataUrl(new Id(TestBucketId)))).Returns(info =>
-                    new UniTask<Response>(new Response(HttpStatusCode.OK, TestBucketData)));
-
-                BucketService bucketService = new BucketService(server, client);
-                var data = await bucketService.Data.GetAll<TestBucketDataModel>(new Id(TestBucketId),
-                    new QueryParams());
-
-                Assert.IsTrue(data.Length == 3);
-            });
-        }
     }
 }
