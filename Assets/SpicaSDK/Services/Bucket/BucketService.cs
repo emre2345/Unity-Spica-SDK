@@ -8,19 +8,21 @@ using Newtonsoft.Json;
 
 namespace SpicaSDK.Services
 {
-    public class BucketService : ISpicaService
+    public partial class BucketService : ISpicaService
     {
         private ISpicaServer server;
         private IHttpClient httpClient;
+        private IWebSocketClient webSocketClient;
 
         public readonly DataService Data;
 
-        public BucketService(ISpicaServer server, IHttpClient httpClient)
+        public BucketService(ISpicaServer server, IHttpClient httpClient, IWebSocketClient webSocketClient)
         {
             this.server = server;
             this.httpClient = httpClient;
 
             Data = new DataService(server, httpClient);
+            Realtime = new RealtimeService(server, webSocketClient);
         }
 
         public async UniTask<Bucket> Get(Id id)
@@ -105,10 +107,6 @@ namespace SpicaSDK.Services
 
                 throw new SpicaServerException();
             }
-        }
-
-        public class RealtimeService : ISpicaService
-        {
         }
     }
 }
