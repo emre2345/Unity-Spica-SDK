@@ -18,6 +18,38 @@ namespace SpicaSDK.Tests.Editor
 {
     public partial class BucketServiceTests
     {
+        private class TestBucketDataModel
+        {
+            public readonly Id Id;
+            public string Title;
+            public string Description;
+
+            public TestBucketDataModel()
+            {
+            }
+
+            public TestBucketDataModel(string title, string description)
+            {
+                Title = title;
+                Description = description;
+            }
+
+            public TestBucketDataModel(string _id, string title, string description)
+            {
+                Id = new Id(_id);
+                Title = title;
+                Description = description;
+            }
+
+            public override string ToString()
+            {
+                return $"{{\"_id\": \"{Id}\", \"title\": \"{Title}\", \"description\": \"{Description}\"}}";
+            }
+        }
+
+        private static TestBucketDataModel[] TestDatas =>
+            JsonConvert.DeserializeObject<TestBucketDataModel[]>(TestBucketData);
+
         private static string TestBucketDataAsJson =>
             File.ReadAllText($"{Application.dataPath}/SpicaSDK/Tests/Editor/TestAssets/Bucket.txt");
 
@@ -26,6 +58,8 @@ namespace SpicaSDK.Tests.Editor
 
         private static string TestBucketData =>
             File.ReadAllText($"{Application.dataPath}/SpicaSDK/Tests/Editor/TestAssets/BucketData.txt");
+
+        private static IWebSocketClient MockWebSocketClient => Substitute.For<IWebSocketClient>();
 
         [UnityTest]
         public IEnumerator GetThrowsUnauthorized() => UniTask.ToCoroutine(async delegate
@@ -41,7 +75,7 @@ namespace SpicaSDK.Tests.Editor
 
             try
             {
-                await new BucketService(server, client).Get(new Id(bucketId));
+                await new BucketService(server, client, MockWebSocketClient).Get(new Id(bucketId));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -68,7 +102,7 @@ namespace SpicaSDK.Tests.Editor
             Identity identity = await identityService.LogIn("identity", "password", float.MaxValue);
             server.Identity = identity;
 
-            BucketService bucketService = new BucketService(server, client);
+            BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
             Bucket bucket = await bucketService.Get(new Id(bucketId));
 
             Assert.NotNull(bucket);

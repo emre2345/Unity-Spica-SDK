@@ -17,37 +17,6 @@ namespace SpicaSDK.Tests.Editor
     {
         public class DataTests
         {
-            private class TestBucketDataModel
-            {
-                public readonly Id Id;
-                public readonly string Title;
-                public readonly string Description;
-
-                public TestBucketDataModel()
-                {
-                }
-
-                public TestBucketDataModel(string title, string description)
-                {
-                    Title = title;
-                    Description = description;
-                }
-
-                public TestBucketDataModel(string _id, string title, string description)
-                {
-                    Id = new Id(_id);
-                    Title = title;
-                    Description = description;
-                }
-
-                public override string ToString()
-                {
-                    return $"{{\"_id\": \"{Id}\", \"title\": \"{Title}\", \"description\": \"{Description}\"}}";
-                }
-            }
-
-            private TestBucketDataModel[] TestDatas =>
-                JsonConvert.DeserializeObject<TestBucketDataModel[]>(TestBucketData);
 
             [UnityTest]
             public IEnumerator Get() => UniTask.ToCoroutine(async delegate
@@ -61,7 +30,7 @@ namespace SpicaSDK.Tests.Editor
                     .Returns(info => new UniTask<Response>(
                         new Response(HttpStatusCode.OK, firstData.ToString())));
 
-                BucketService bucketService = new BucketService(server, client);
+                BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
                 var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(TestBucketId), firstData.Id,
                     new QueryParams());
 
@@ -77,7 +46,7 @@ namespace SpicaSDK.Tests.Editor
                 client.Get(new Request(server.BucketDataUrl(new Id(TestBucketId)))).Returns(info =>
                     new UniTask<Response>(new Response(HttpStatusCode.OK, TestBucketData)));
 
-                BucketService bucketService = new BucketService(server, client);
+                BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
                 var data = await bucketService.Data.GetAll<TestBucketDataModel>(new Id(TestBucketId),
                     new QueryParams());
 
@@ -102,7 +71,7 @@ namespace SpicaSDK.Tests.Editor
                             newData.Description))));
                 });
 
-                BucketService bucketService = new BucketService(server, client);
+                BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
                 TestBucketDataModel data =
                     await bucketService.Data.Insert<TestBucketDataModel>(new Id(TestBucketId), newData);
 
@@ -119,7 +88,7 @@ namespace SpicaSDK.Tests.Editor
                 var testData = TestDatas[0];
                 var patchedData = new TestBucketDataModel("patchedTitle", "patchedDesc");
 
-                BucketService bucketService = new BucketService(server, client);
+                BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
                 var data = await bucketService.Data.Patch(new Id(TestBucketId), testData.Id, patchedData);
 
                 Assert.IsNotNull(data);
@@ -133,7 +102,7 @@ namespace SpicaSDK.Tests.Editor
 
                 var testData = TestDatas[0];
 
-                BucketService bucketService = new BucketService(server, client);
+                BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
                 var data = await bucketService.Data.Remove(new Id(TestBucketId), testData.Id);
 
                 Assert.IsNotNull(data);
