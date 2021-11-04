@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -21,7 +22,7 @@ namespace SpicaSDK.Tests.Editor
         public class BucketRealtimeServiceTests
         {
             [UnityTest]
-            public IEnumerator WatchDocument() => UniTask.ToCoroutine(async delegate()
+            public IEnumerator WatchDocument() => UniTask.ToCoroutine(delegate()
             {
                 ISpicaServer server = Substitute.For<ISpicaServer>();
                 IHttpClient httpClient = Substitute.For<IHttpClient>();
@@ -45,12 +46,16 @@ namespace SpicaSDK.Tests.Editor
 
                 string newTitle = "newTitle";
 
+                CancellationTokenSource source = CancellationTokenSource.CreateLinkedTokenSource();
                 SkipInitialData(documentConnection).Subscribe(message =>
                 {
                     Assert.IsTrue(message.Title.Equals(newTitle));
+                    source.Cancel();
                 });
 
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => firstData.Title = newTitle);
+
+                return UniTask.WaitUntilCanceled(source.Token);
             });
 
             private IObservable<T> SkipInitialData<T>(IObservable<T> stream) =>
@@ -58,55 +63,87 @@ namespace SpicaSDK.Tests.Editor
 
 
             [UnityTest]
-            public IEnumerator WatchBucket() => UniTask.ToCoroutine(async delegate()
+            public IEnumerator WatchBucket() => UniTask.ToCoroutine(delegate()
             {
-                IWebSocketClient webSocketClient;
-                BucketConnection<TestBucketDataModel> bucketConnection = GetBucketConnection(out webSocketClient);
+                ISpicaServer server = Substitute.For<ISpicaServer>();
+                IHttpClient httpClient = Substitute.For<IHttpClient>();
+                IWebSocketClient webSocketClient = MockWebSocketClient;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var newData = new TestBucketDataModel("new", "new");
 
                 webSocketClient.Connect(string.Empty).ReturnsForAnyArgs(delegate(CallInfo info)
                 {
-                    return datas.ObserveEveryValueChanged(list => list).Select(list =>
+                    return datas.ObserveEveryValueChanged(list => list.Count).Select(list =>
                         new Message(DataChangeType.Insert, HttpStatusCode.OK, JsonConvert.SerializeObject(newData)));
                 });
 
-                datas.Add(newData);
+                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
+                BucketConnection<TestBucketDataModel> bucketConnection =
+                    bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                        new QueryParams());
+
+                CancellationTokenSource source = new CancellationTokenSource();
+                SkipInitialData(bucketConnection).Subscribe(message =>
+                {
+                    Assert.IsTrue(message.ChangeType == DataChangeType.Insert);
+                    source.Cancel();
+                });
+                //
+                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(
+                    unit => datas.Add(newData)
+                );
+
+                return UniTask.WaitUntilCanceled(source.Token);
+            });
+
+            [UnityTest]
+            public IEnumerator InsertToBucket() => UniTask.ToCoroutine(delegate()
+            {
+                CancellationTokenSource source = new CancellationTokenSource();
+
+                ISpicaServer server = Substitute.For<ISpicaServer>();
+                IHttpClient httpClient = Substitute.For<IHttpClient>();
+                IWebSocketClient webSocketClient = MockWebSocketClient;
+
+                var datas = new List<TestBucketDataModel>(TestDatas);
+                var newData = new TestBucketDataModel("new", "new");
+
+                webSocketClient.Connect(string.Empty).ReturnsForAnyArgs(delegate(CallInfo info)
+                {
+                    return datas.ObserveEveryValueChanged(list => list.Count).Select(list =>
+                        new Message(DataChangeType.Insert, HttpStatusCode.OK, JsonConvert.SerializeObject(newData)));
+                });
+                webSocketClient.When(client => client.SendMessage(Arg.Any<string>())).Do(info => datas.Add(newData));
+
+                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
+                BucketConnection<TestBucketDataModel> bucketConnection =
+                    bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                        new QueryParams());
+
 
                 SkipInitialData(bucketConnection).Subscribe(message =>
                 {
                     Assert.IsTrue(message.ChangeType == DataChangeType.Insert);
+                    Assert.IsTrue(message.Document.Title == newData.Title &&
+                                  message.Document.Description == newData.Description);
+                    source.Cancel();
                 });
-                //
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(
-                    unit => datas = new List<TestBucketDataModel>(datas)
-                );
-            });
 
-            [UnityTest]
-            public IEnumerator InsertToBucket() => UniTask.ToCoroutine(async delegate() { });
+                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => bucketConnection.Insert(newData));
+
+
+                return UniTask.WaitUntilCanceled(source.Token);
+            });
 
             [UnityTest]
             public IEnumerator DeleteFromBucket() => UniTask.ToCoroutine(async delegate() { });
 
             [UnityTest]
-            public IEnumerator PatchBucket() => UniTask.ToCoroutine(async delegate() { });
+            public IEnumerator PatchBucket() => UniTask.ToCoroutine(async delegate() { Assert.Fail(); });
 
             [UnityTest]
             public IEnumerator CloseConnectionWhenStreamDisposed() => UniTask.ToCoroutine(async delegate() { });
-
-            private BucketConnection<TestBucketDataModel> GetBucketConnection(out IWebSocketClient webSocketClient)
-            {
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                webSocketClient = MockWebSocketClient;
-
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
-                return
-                    bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
-                        new QueryParams());
-            }
         }
     }
 }

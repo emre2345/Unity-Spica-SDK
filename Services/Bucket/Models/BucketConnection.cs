@@ -20,10 +20,12 @@ namespace SpicaSDK.Services.Models
         }
 
         private IObservable<Message> connection;
+        private Action<string> sendMessage;
 
-        public BucketConnection(IObservable<Message> connection)
+        public BucketConnection(IObservable<Message> connection, Action<string> sendMessage)
         {
             this.connection = connection;
+            this.sendMessage = sendMessage;
         }
 
         public IDisposable Subscribe(IObserver<BucketChange<T>> observer)
@@ -46,7 +48,10 @@ namespace SpicaSDK.Services.Models
 
         public void Insert(T document)
         {
-            
+            (string @event, string data) message =
+                (RealtimeMessageEvents.Insert, JsonConvert.SerializeObject(document));
+
+            sendMessage(JsonConvert.SerializeObject(message));
         }
     }
 }

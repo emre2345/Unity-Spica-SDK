@@ -36,7 +36,7 @@ namespace SpicaSDK.Services
             {
                 string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "&" + queryParams.QueryString;
                 IObservable<Message> connection = webSocketClient.Connect(url);
-                return new BucketConnection<T>(connection);
+                return new BucketConnection<T>(connection, s => webSocketClient.SendMessage(s));
             }
         }
     }
