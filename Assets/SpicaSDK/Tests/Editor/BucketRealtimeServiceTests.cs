@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -20,7 +21,7 @@ namespace SpicaSDK.Tests.Editor
         public class BucketRealtimeServiceTests
         {
             [UnityTest]
-            public IEnumerator Get() => UniTask.ToCoroutine(async delegate()
+            public IEnumerator WatchDocument() => UniTask.ToCoroutine(async delegate()
             {
                 ISpicaServer server = Substitute.For<ISpicaServer>();
                 IHttpClient httpClient = Substitute.For<IHttpClient>();
@@ -39,21 +40,73 @@ namespace SpicaSDK.Tests.Editor
                 });
 
                 BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
-                IObservable<TestBucketDataModel> stream =
-                    bucketService.Realtime.Get<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
+                DocumentChange<TestBucketDataModel> documentConnection =
+                    bucketService.Realtime.WatchDocument<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
 
                 string newTitle = "newTitle";
 
-                SkipInitialData(stream).Subscribe(message => { Assert.IsTrue(message.Title.Equals(newTitle)); });
+                SkipInitialData(documentConnection).Subscribe(message =>
+                {
+                    Assert.IsTrue(message.Title.Equals(newTitle));
+                });
 
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => firstData.Title = newTitle);
             });
 
-            private IObservable<TestBucketDataModel> SkipInitialData(IObservable<TestBucketDataModel> stream) =>
+            private IObservable<T> SkipInitialData<T>(IObservable<T> stream) =>
                 stream.Skip(1);
 
+
             [UnityTest]
-            public IEnumerator GetAll() => UniTask.ToCoroutine(async delegate() { });
+            public IEnumerator WatchBucket() => UniTask.ToCoroutine(async delegate()
+            {
+                IWebSocketClient webSocketClient;
+                BucketConnection<TestBucketDataModel> bucketConnection = GetBucketConnection(out webSocketClient);
+
+                var datas = new List<TestBucketDataModel>(TestDatas);
+                var newData = new TestBucketDataModel("new", "new");
+
+                webSocketClient.Connect(string.Empty).ReturnsForAnyArgs(delegate(CallInfo info)
+                {
+                    return datas.ObserveEveryValueChanged(list => list).Select(list =>
+                        new Message(DataChangeType.Insert, HttpStatusCode.OK, JsonConvert.SerializeObject(newData)));
+                });
+
+                datas.Add(newData);
+
+                SkipInitialData(bucketConnection).Subscribe(message =>
+                {
+                    Assert.IsTrue(message.ChangeType == DataChangeType.Insert);
+                });
+                //
+                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(
+                    unit => datas = new List<TestBucketDataModel>(datas)
+                );
+            });
+
+            [UnityTest]
+            public IEnumerator InsertToBucket() => UniTask.ToCoroutine(async delegate() { });
+
+            [UnityTest]
+            public IEnumerator DeleteFromBucket() => UniTask.ToCoroutine(async delegate() { });
+
+            [UnityTest]
+            public IEnumerator PatchBucket() => UniTask.ToCoroutine(async delegate() { });
+
+            [UnityTest]
+            public IEnumerator CloseConnectionWhenStreamDisposed() => UniTask.ToCoroutine(async delegate() { });
+
+            private BucketConnection<TestBucketDataModel> GetBucketConnection(out IWebSocketClient webSocketClient)
+            {
+                ISpicaServer server = Substitute.For<ISpicaServer>();
+                IHttpClient httpClient = Substitute.For<IHttpClient>();
+                webSocketClient = MockWebSocketClient;
+
+                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
+                return
+                    bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                        new QueryParams());
+            }
         }
     }
 }

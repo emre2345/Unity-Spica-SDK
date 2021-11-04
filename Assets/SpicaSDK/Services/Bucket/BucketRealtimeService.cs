@@ -22,29 +22,21 @@ namespace SpicaSDK.Services
                 this.webSocketClient = webSocketClient;
             }
 
-            public IObservable<T> Get<T>(Id bucketId, Id documentId)
+            public DocumentChange<T> WatchDocument<T>(Id bucketId, Id documentId) where T : class
             {
-                string url = server.BucketDataDocumentUrl(bucketId, documentId).Replace("http", "ws");
+                QueryParams queryParams = new QueryParams(1);
+                queryParams.AddQuery("filter", $"_id=={documentId.Value}");
+
+                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "&" + queryParams.QueryString;
                 IObservable<Message> connection = webSocketClient.Connect(url);
-                return connection.Do(message =>
-                {
-                    if (message.ChangeType == DataChangeType.Response)
-                    {
-                        //TODO: check status code and text
-                    }
-                }).Where(message => message.ChangeType != DataChangeType.Response).Select(message =>
-                {
-                    switch (message.ChangeType)
-                    {
-                        case DataChangeType.Initial:
-                        case DataChangeType.Insert:
-                        case DataChangeType.Replace:
-                        case DataChangeType.Update:
-                            return JsonConvert.DeserializeObject<T>(message.Text);
-                        default:
-                            return default(T);
-                    }
-                });
+                return new DocumentChange<T>(connection);
+            }
+
+            public BucketConnection<T> ConnectToBucket<T>(Id bucketId, QueryParams queryParams) where T : class
+            {
+                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "&" + queryParams.QueryString;
+                IObservable<Message> connection = webSocketClient.Connect(url);
+                return new BucketConnection<T>(connection);
             }
         }
     }
