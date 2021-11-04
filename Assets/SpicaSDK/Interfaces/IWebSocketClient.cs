@@ -9,6 +9,6 @@ namespace SpicaSDK.Interfaces
 
         void Disconnect();
 
-        void SendMessage();
+        void SendMessage(string message);
     }
 }

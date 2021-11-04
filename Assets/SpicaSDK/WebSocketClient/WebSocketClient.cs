@@ -15,7 +15,7 @@ namespace SpicaSDK.Services.WebSocketClient
             throw new System.NotImplementedException();
         }
 
-        public void SendMessage()
+        public void SendMessage(string message)
         {
             throw new System.NotImplementedException();
         }
