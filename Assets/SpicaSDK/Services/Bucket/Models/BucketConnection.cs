@@ -1,11 +1,12 @@
 using System;
 using Newtonsoft.Json;
+using SpicaSDK.Interfaces;
 using SpicaSDK.Services.WebSocketClient;
 using UniRx;
 
 namespace SpicaSDK.Services.Models
 {
-    public class BucketConnection<T> : IObservable<BucketConnection<T>.BucketChange<T>> where T : class
+    public class BucketConnection<T> : IDisposable, IObservable<BucketConnection<T>.BucketChange<T>> where T : class
     {
         public struct BucketChange<T>
         {
@@ -19,13 +20,14 @@ namespace SpicaSDK.Services.Models
             }
         }
 
-        private IObservable<Message> connection;
-        private Action<string> sendMessage;
+        private IWebSocketConnection connection;
+        private CompositeDisposable subscriptions;
 
-        public BucketConnection(IObservable<Message> connection, Action<string> sendMessage)
+        public BucketConnection(IWebSocketConnection connection)
         {
             this.connection = connection;
-            this.sendMessage = sendMessage;
+
+            subscriptions = new CompositeDisposable(16);
         }
 
         public IDisposable Subscribe(IObserver<BucketChange<T>> observer)
@@ -43,15 +45,36 @@ namespace SpicaSDK.Services.Models
 
                 return new BucketChange<T>(message.ChangeType,
                     JsonConvert.DeserializeObject<T>(message.Text));
-            }).Subscribe(observer);
+            }).Subscribe(observer).AddTo(subscriptions);
         }
 
         public void Insert(T document)
         {
-            (string @event, string data) message =
-                (RealtimeMessageEvents.Insert, JsonConvert.SerializeObject(document));
+            ApplyOperation(RealtimeMessageEvents.Insert, document);
+        }
 
-            sendMessage(JsonConvert.SerializeObject(message));
+        public void Delete(T document)
+        {
+            ApplyOperation(RealtimeMessageEvents.Delete, document);
+        }
+
+        public void Patch(T document)
+        {
+            ApplyOperation(RealtimeMessageEvents.Patch, document);
+        }
+
+        private void ApplyOperation(string @event, T document)
+        {
+            (string @event, string data) message =
+                (@event, JsonConvert.SerializeObject(document));
+
+            connection.SendMessage(JsonConvert.SerializeObject(message));
+        }
+
+        public void Dispose()
+        {
+            subscriptions.Clear();
+            connection.Disconnect();
         }
     }
 }

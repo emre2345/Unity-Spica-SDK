@@ -61,6 +61,8 @@ namespace SpicaSDK.Tests.Editor
 
         private static IWebSocketClient MockWebSocketClient => Substitute.For<IWebSocketClient>();
 
+        private static IWebSocketConnection MockWebSocketConnection => Substitute.For<IWebSocketConnection>();
+
         [UnityTest]
         public IEnumerator GetThrowsUnauthorized() => UniTask.ToCoroutine(async delegate
         {
