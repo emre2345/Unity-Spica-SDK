@@ -1,23 +1,20 @@
 using System;
+using NativeWebSocket;
+using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using UniRx;
+using UnityEngine;
 
 namespace SpicaSDK.Services.WebSocketClient
 {
     public class WebSocketClient : IWebSocketClient
     {
-        public IObservable<Message> Connect(string url)
+        
+        public IWebSocketConnection Connect(string url)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void Disconnect()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SendMessage(string message)
-        {
-            throw new System.NotImplementedException();
+            var socket = new WebSocket(url);
+            socket.Connect();
+            return new WebSocketConnection(socket);
         }
     }
 }
