@@ -23,23 +23,39 @@ namespace SpicaSDK.Tests.Editor
     {
         public class BucketRealtimeServiceTests
         {
+            private void WhenSentMessageThroughWebSocketDo(IWebSocketConnection connection,
+                Action<Tuple<string, TestBucketDataModel>> doDlg) =>
+                connection.When(socketConnection => socketConnection.SendMessage(Arg.Any<string>())).Do(
+                    delegate(CallInfo info)
+                    {
+                        var arg = info.Arg<string>();
+                        var message = new {@Event = string.Empty, data = new TestBucketDataModel()};
+                        var serverMessage = JsonConvert.DeserializeAnonymousType(arg, message);
+                        doDlg(new Tuple<string, TestBucketDataModel>(serverMessage.Event, serverMessage.data));
+                    });
+
+            private void WhenWebSocketSubscribed(IWebSocketConnection connection, Func<CallInfo, IDisposable> dlg) =>
+                connection.Subscribe(Arg.Any<IObserver<Message>>()).Returns(dlg);
+
             [UnityTest]
             public IEnumerator WatchDocument() => UniTask.ToCoroutine(delegate()
             {
                 ISpicaServer server = Substitute.For<ISpicaServer>();
                 IHttpClient httpClient = Substitute.For<IHttpClient>();
                 IWebSocketClient webSocketClient = MockWebSocketClient;
+                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 var firstData = TestDatas[0];
 
-                webSocketClient.Connect(string.Empty).ReturnsForAnyArgs(delegate(CallInfo info)
+                webSocketClient.Connect(string.Empty).ReturnsForAnyArgs(webSocketConnection);
+                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
                 {
                     return firstData.ObserveEveryValueChanged(model => model.Title).Skip(1).Select(s =>
                     {
                         var newData = new TestBucketDataModel(firstData.Id.Value, s, firstData.Description);
                         return new Message(DataChangeType.Update, HttpStatusCode.OK,
                             JsonConvert.SerializeObject(newData));
-                    });
+                    }).Subscribe(info.Arg<IObserver<Message>>());
                 });
 
                 BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
@@ -48,7 +64,7 @@ namespace SpicaSDK.Tests.Editor
 
                 string newTitle = "newTitle";
 
-                CancellationTokenSource source = CancellationTokenSource.CreateLinkedTokenSource();
+                CancellationTokenSource source = new CancellationTokenSource();
                 documentConnection.Subscribe(message =>
                 {
                     Assert.IsTrue(message.Title.Equals(newTitle));
@@ -57,7 +73,7 @@ namespace SpicaSDK.Tests.Editor
 
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => firstData.Title = newTitle);
 
-                return UniTask.WaitUntilCanceled(source.Token);
+                return UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
 
 
@@ -107,20 +123,6 @@ namespace SpicaSDK.Tests.Editor
                 return UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
 
-            private void WhenSentMessageThroughWebSocketDo(IWebSocketConnection connection,
-                Action<Tuple<string, TestBucketDataModel>> doDlg) =>
-                connection.When(socketConnection => socketConnection.SendMessage(Arg.Any<string>())).Do(
-                    delegate(CallInfo info)
-                    {
-                        var arg = info.Arg<string>();
-                        var message = new {@Event = string.Empty, data = new TestBucketDataModel()};
-                        var serverMessage = JsonConvert.DeserializeAnonymousType(arg, message);
-                        Debug.Log($"Server Message: {arg}");
-                        doDlg(new Tuple<string, TestBucketDataModel>(serverMessage.Event, serverMessage.data));
-                    });
-
-            private void WhenWebSocketSubscribed(IWebSocketConnection connection, Func<CallInfo, IDisposable> dlg) =>
-                connection.Subscribe(Arg.Any<IObserver<Message>>()).Returns(dlg);
 
             [UnityTest]
             public IEnumerator InsertToBucket() => UniTask.ToCoroutine(delegate()

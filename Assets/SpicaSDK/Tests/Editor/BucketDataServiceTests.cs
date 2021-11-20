@@ -17,7 +17,6 @@ namespace SpicaSDK.Tests.Editor
     {
         public class DataTests
         {
-
             [UnityTest]
             public IEnumerator Get() => UniTask.ToCoroutine(async delegate
             {
@@ -88,6 +87,16 @@ namespace SpicaSDK.Tests.Editor
                 var testData = TestDatas[0];
                 var patchedData = new TestBucketDataModel("patchedTitle", "patchedDesc");
 
+                client.Patch(new Request(server.BucketDataUrl(new Id(TestBucketId)),
+                    JsonConvert.SerializeObject(patchedData))).Returns(
+                    delegate(CallInfo info)
+                    {
+                        testData.Title = patchedData.Title;
+                        testData.Description = patchedData.Description;
+                        return new UniTask<Response>(new Response(HttpStatusCode.OK,
+                            JsonConvert.SerializeObject(testData)));
+                    });
+
                 BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
                 var data = await bucketService.Data.Patch(new Id(TestBucketId), testData.Id, patchedData);
 
@@ -100,12 +109,21 @@ namespace SpicaSDK.Tests.Editor
                 ISpicaServer server = Substitute.For<ISpicaServer>();
                 IHttpClient client = Substitute.For<IHttpClient>();
 
+                var datas = new List<TestBucketDataModel>(TestDatas);
                 var testData = TestDatas[0];
+                
+                client.Delete(new Request()).ReturnsForAnyArgs(
+                    delegate(CallInfo info)
+                    {
+                        datas.RemoveAt(0);
+                        return new UniTask<Response>(new Response(HttpStatusCode.OK,
+                            JsonConvert.SerializeObject(testData)));
+                    });
 
                 BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
-                var data = await bucketService.Data.Remove(new Id(TestBucketId), testData.Id);
+                await bucketService.Data.Remove(new Id(TestBucketId), testData.Id);
 
-                Assert.IsNotNull(data);
+                Assert.IsNotNull(datas.Count < TestDatas.Length);
             });
         }
     }

@@ -21,12 +21,22 @@ namespace SpicaSDK
 
         public UniTask<Response> Patch(Request request)
         {
-            throw new NotImplementedException();
+            return CreateAndSendRequest(() =>
+            {
+                var req = new UnityWebRequest(request.Url, "patch");
+                SetHeaders(req, request.Headers);
+                return req;
+            });
         }
 
         public UniTask<Response> Delete(Request request)
         {
-            throw new NotImplementedException();
+            return CreateAndSendRequest(() =>
+            {
+                var req = new UnityWebRequest(request.Url, "delete");
+                SetHeaders(req, request.Headers);
+                return req;
+            });
         }
 
         UniTask<Response> IHttpClient.Get(Request request)
