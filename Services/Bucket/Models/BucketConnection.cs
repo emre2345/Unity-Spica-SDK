@@ -65,9 +65,6 @@ namespace SpicaSDK.Services.Models
 
         private void ApplyOperation(string @event, T document)
         {
-            // (string @event, string data) message =
-            // (@event, JsonConvert.SerializeObject(document));
-
             var message = new {@event = @event, data = document};
 
             connection.SendMessage(JsonConvert.SerializeObject(message));

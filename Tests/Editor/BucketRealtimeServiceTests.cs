@@ -107,7 +107,8 @@ namespace SpicaSDK.Tests.Editor
                 return UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
 
-            private void WhenSentMessageThroughWebSocketDo(IWebSocketConnection connection, Action<Tuple<string, TestBucketDataModel>> doDlg) =>
+            private void WhenSentMessageThroughWebSocketDo(IWebSocketConnection connection,
+                Action<Tuple<string, TestBucketDataModel>> doDlg) =>
                 connection.When(socketConnection => socketConnection.SendMessage(Arg.Any<string>())).Do(
                     delegate(CallInfo info)
                     {
@@ -180,7 +181,7 @@ namespace SpicaSDK.Tests.Editor
 
                 webSocketClient.Connect(String.Empty).ReturnsForAnyArgs(webSocketConnection);
                 WhenSentMessageThroughWebSocketDo(webSocketConnection, message => datas.Remove(deletedData));
-                
+
                 webSocketConnection.Subscribe(Arg.Any<IObserver<Message>>()).ReturnsForAnyArgs(delegate(CallInfo info)
                 {
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i < TestDatas.Length)
@@ -258,22 +259,22 @@ namespace SpicaSDK.Tests.Editor
                 ISpicaServer server = Substitute.For<ISpicaServer>();
                 IHttpClient httpClient = Substitute.For<IHttpClient>();
                 IWebSocketClient webSocketClient = MockWebSocketClient;
+                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
-                var socket = Substitute.For<WebSocket>();
-                var connection = new WebSocketConnection(socket);
-
-                webSocketClient.Connect(Arg.Any<string>()).Returns(info => connection);
+                webSocketClient.Connect(Arg.Any<string>()).Returns(info => webSocketConnection);
 
                 BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
-
+                webSocketConnection.When(socketConnection => socketConnection.Disconnect()).Do(info =>
+                {
+                    source.Cancel();
+                });
                 bucketConnection.Dispose();
-                // webSocketClient.Received().Disconnect();
 
-                return UniTask.WaitUntilCanceled(source.Token);
+                return UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
         }
     }
