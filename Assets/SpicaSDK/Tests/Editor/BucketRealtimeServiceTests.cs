@@ -37,12 +37,23 @@ namespace SpicaSDK.Tests.Editor
             private void WhenWebSocketSubscribed(IWebSocketConnection connection, Func<CallInfo, IDisposable> dlg) =>
                 connection.Subscribe(Arg.Any<IObserver<Message>>()).Returns(dlg);
 
+            private (BucketService, IWebSocketClient) MockBucketService
+            {
+                get
+                {
+                    ISpicaServer server = Substitute.For<ISpicaServer>();
+                    IHttpClient httpClient = Substitute.For<IHttpClient>();
+                    IWebSocketClient webSocketClient = MockWebSocketClient;
+
+                    var service = new BucketService(server, httpClient, webSocketClient);
+                    return (service, webSocketClient);
+                }
+            }
+
             [UnityTest]
             public IEnumerator WatchDocument() => UniTask.ToCoroutine(delegate()
             {
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                IWebSocketClient webSocketClient = MockWebSocketClient;
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
                 IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 var firstData = TestDatas[0];
@@ -58,7 +69,6 @@ namespace SpicaSDK.Tests.Editor
                     }).Subscribe(info.Arg<IObserver<Message>>());
                 });
 
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 DocumentChange<TestBucketDataModel> documentConnection =
                     bucketService.Realtime.WatchDocument<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
 
@@ -80,9 +90,7 @@ namespace SpicaSDK.Tests.Editor
             [UnityTest]
             public IEnumerator WatchBucket() => UniTask.ToCoroutine(delegate()
             {
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                IWebSocketClient webSocketClient = MockWebSocketClient;
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
                 IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
@@ -100,7 +108,6 @@ namespace SpicaSDK.Tests.Editor
 
                 // ---
 
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
@@ -129,9 +136,7 @@ namespace SpicaSDK.Tests.Editor
             {
                 CancellationTokenSource source = new CancellationTokenSource();
 
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                IWebSocketClient webSocketClient = MockWebSocketClient;
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
                 IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
@@ -153,7 +158,6 @@ namespace SpicaSDK.Tests.Editor
                 });
                 // ---
 
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
@@ -176,9 +180,7 @@ namespace SpicaSDK.Tests.Editor
             {
                 CancellationTokenSource source = new CancellationTokenSource();
 
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                IWebSocketClient webSocketClient = MockWebSocketClient;
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
                 IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
@@ -197,7 +199,6 @@ namespace SpicaSDK.Tests.Editor
                         }).Subscribe(info.Arg<IObserver<Message>>());
                 });
 
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
@@ -220,9 +221,7 @@ namespace SpicaSDK.Tests.Editor
             {
                 CancellationTokenSource source = new CancellationTokenSource();
 
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                IWebSocketClient webSocketClient = MockWebSocketClient;
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
                 IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
@@ -240,7 +239,6 @@ namespace SpicaSDK.Tests.Editor
                     }).Subscribe(info.Arg<IObserver<Message>>());
                 });
 
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
@@ -262,14 +260,11 @@ namespace SpicaSDK.Tests.Editor
             {
                 CancellationTokenSource source = new CancellationTokenSource(1000);
 
-                ISpicaServer server = Substitute.For<ISpicaServer>();
-                IHttpClient httpClient = Substitute.For<IHttpClient>();
-                IWebSocketClient webSocketClient = MockWebSocketClient;
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
                 IWebSocketConnection webSocketConnection = MockWebSocketConnection;
 
                 webSocketClient.Connect(Arg.Any<string>()).Returns(info => webSocketConnection);
 
-                BucketService bucketService = new BucketService(server, httpClient, webSocketClient);
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
