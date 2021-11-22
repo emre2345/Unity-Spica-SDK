@@ -20,11 +20,11 @@ namespace SpicaSDK.Services.Services.Identity
 
         public async UniTask<Models.Identity> LogIn(string identity, string password, float lifespan)
         {
-            var payload = new Dictionary<string, object>(3);
-            payload.Add("identity", identity);
+            var payload = new Dictionary<string, object>(2);
+            payload.Add("identifier", identity);
             payload.Add("password", password);
-            payload.Add("expires", lifespan);
-
+            payload.Add("expiry", lifespan);
+            
             var response = await httpClient.Post(new Request(server.IdentityUrl, JsonConvert.SerializeObject(payload)));
 
             if (!response.Success)

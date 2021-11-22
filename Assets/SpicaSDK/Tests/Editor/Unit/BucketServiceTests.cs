@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Net;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
@@ -10,11 +11,10 @@ using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;
 using SpicaSDK.Services.Services.Identity.Models;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace SpicaSDK.Tests.Editor
+namespace SpicaSDK.Tests.Editor.Unit
 {
     public partial class BucketServiceTests
     {

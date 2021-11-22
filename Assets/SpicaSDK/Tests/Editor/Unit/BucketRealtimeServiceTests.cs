@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using NativeWebSocket;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.Core;
@@ -14,10 +13,9 @@ using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.WebSocketClient;
 using UniRx;
-using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace SpicaSDK.Tests.Editor
+namespace SpicaSDK.Tests.Editor.Unit
 {
     public partial class BucketServiceTests
     {
