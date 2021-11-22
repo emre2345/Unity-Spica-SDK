@@ -7,7 +7,7 @@ using SpicaSDK.Interfaces;
 using SpicaSDK.Services;
 using UnityEngine.TestTools;
 
-namespace SpicaSDK.Tests.Editor
+namespace SpicaSDK.Tests.Editor.Unit
 {
     public class SpicaServerTests
     {

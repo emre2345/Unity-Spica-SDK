@@ -91,7 +91,7 @@ namespace SpicaSDK.Services
                     new Dictionary<string, string>(0)));
 
                 if (ResponseValidator.Validate(response))
-                    return JsonConvert.DeserializeObject<T>(response.Text);
+                    return document;
 
                 throw new SpicaServerException();
             }

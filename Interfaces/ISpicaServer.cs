@@ -7,7 +7,7 @@ namespace SpicaSDK.Interfaces
 {
     public interface ISpicaServer
     {
-        UniTask<bool> Initialize();
+        UniTask<Response> Initialize();
         bool IsAvailable { get; }
 
         string BucketUrl(Id bucketId);

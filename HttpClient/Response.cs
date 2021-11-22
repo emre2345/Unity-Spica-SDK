@@ -15,5 +15,10 @@ namespace SpicaSDK
             StatusCode = statusCode;
             Text = text;
         }
+
+        public override string ToString()
+        {
+            return $"[ {nameof(Response)} ]\n{StatusCode}\n{Text}";
+        }
     }
 }

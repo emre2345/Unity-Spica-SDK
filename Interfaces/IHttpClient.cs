@@ -5,6 +5,8 @@ namespace SpicaSDK.Interfaces
 {
     public interface IHttpClient
     {
+        void AddDefaultHeader(string key, string value);
+        
         UniTask<Response> Get(Request request);
 
         UniTask<Response> Post(Request request);

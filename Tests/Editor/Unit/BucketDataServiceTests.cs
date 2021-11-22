@@ -11,7 +11,7 @@ using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using UnityEngine.TestTools;
 
-namespace SpicaSDK.Tests.Editor
+namespace SpicaSDK.Tests.Editor.Unit
 {
     public partial class BucketServiceTests
     {
