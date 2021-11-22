@@ -62,6 +62,11 @@ namespace SpicaSDK.Services.Models
         {
             ApplyOperation(RealtimeMessageEvents.Patch, document);
         }
+        
+        public void Replace(T document)
+        {
+            ApplyOperation(RealtimeMessageEvents.Replace, document);
+        }
 
         private void ApplyOperation(string @event, T document)
         {

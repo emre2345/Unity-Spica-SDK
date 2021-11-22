@@ -29,7 +29,7 @@ namespace SpicaSDK.Tests.Editor
                     delegate(CallInfo info)
                     {
                         var arg = info.Arg<string>();
-                        var message = new {@Event = string.Empty, data = new TestBucketDataModel()};
+                        var message = new { @Event = string.Empty, data = new TestBucketDataModel() };
                         var serverMessage = JsonConvert.DeserializeAnonymousType(arg, message);
                         doDlg(new Tuple<string, TestBucketDataModel>(serverMessage.Event, serverMessage.data));
                     });
@@ -251,6 +251,46 @@ namespace SpicaSDK.Tests.Editor
                 });
 
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => bucketConnection.Patch(patchedData));
+
+                return UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
+            });
+
+            [UnityTest]
+            public IEnumerator ReplaceBucket() => UniTask.ToCoroutine(delegate
+            {
+                CancellationTokenSource source = new CancellationTokenSource();
+
+                (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
+                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+
+                var datas = new List<TestBucketDataModel>(TestDatas);
+                var replacedData = new TestBucketDataModel("replacedTitle", "replacedDesc");
+
+                webSocketClient.Connect(Arg.Any<string>()).Returns(webSocketConnection);
+                WhenSentMessageThroughWebSocketDo(webSocketConnection, tuple => datas[0] = replacedData);
+                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
+                {
+                    return datas.ObserveEveryValueChanged(list => list[0]).Skip(1).Select(i =>
+                    {
+                        return new Message(DataChangeType.Replace, HttpStatusCode.OK,
+                            JsonConvert.SerializeObject(replacedData));
+                    }).Subscribe(info.Arg<IObserver<Message>>());
+                });
+
+                BucketConnection<TestBucketDataModel> bucketConnection =
+                    bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                        new QueryParams());
+
+                bucketConnection.Subscribe(change =>
+                {
+                    Assert.IsTrue(change.ChangeType == DataChangeType.Replace);
+                    Assert.IsTrue(change.Document.Title == replacedData.Title);
+                    Assert.IsTrue(change.Document.Description == replacedData.Description);
+                    source.Cancel();
+                });
+
+                Observable.NextFrame(FrameCountType.EndOfFrame)
+                    .Subscribe(unit => bucketConnection.Replace(replacedData));
 
                 return UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });

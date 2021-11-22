@@ -39,6 +39,16 @@ namespace SpicaSDK
             });
         }
 
+        public UniTask<Response> Put(Request request)
+        {
+            return CreateAndSendRequest(() =>
+            {
+                var req = new UnityWebRequest(request.Url, "put");
+                SetHeaders(req, request.Headers);
+                return req;
+            });
+        }
+
         UniTask<Response> IHttpClient.Get(Request request)
         {
             return CreateAndSendRequest(() =>

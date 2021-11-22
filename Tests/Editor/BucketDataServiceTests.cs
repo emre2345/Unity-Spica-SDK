@@ -111,7 +111,7 @@ namespace SpicaSDK.Tests.Editor
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var testData = TestDatas[0];
-                
+
                 client.Delete(new Request()).ReturnsForAnyArgs(
                     delegate(CallInfo info)
                     {
@@ -124,6 +124,31 @@ namespace SpicaSDK.Tests.Editor
                 await bucketService.Data.Remove(new Id(TestBucketId), testData.Id);
 
                 Assert.IsNotNull(datas.Count < TestDatas.Length);
+            });
+
+            [UnityTest]
+            public IEnumerator Replace() => UniTask.ToCoroutine(async delegate
+            {
+                ISpicaServer server = Substitute.For<ISpicaServer>();
+                IHttpClient client = Substitute.For<IHttpClient>();
+
+                var datas = new List<TestBucketDataModel>(TestDatas);
+                var replacedData = new TestBucketDataModel("replacedTitle", "replacedDesc");
+
+                client.Put(new Request()).ReturnsForAnyArgs(
+                    delegate(CallInfo info)
+                    {
+                        datas[0] = replacedData;
+                        return new UniTask<Response>(new Response(HttpStatusCode.OK,
+                            JsonConvert.SerializeObject(replacedData)));
+                    });
+
+                BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
+                await bucketService.Data.Replace<TestBucketDataModel>(new Id(TestBucketId), datas[0].Id,
+                    replacedData);
+
+                Assert.IsNotNull(datas[0].Title == replacedData.Title &&
+                                 datas[0].Description == replacedData.Description);
             });
         }
     }
