@@ -107,6 +107,18 @@ namespace SpicaSDK.Services
 
                 throw new SpicaServerException();
             }
+
+            public async UniTask<T> Replace<T>(Id bucketId, Id documentId, T document)
+            {
+                var response = await httpClient.Put(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                    JsonConvert.SerializeObject(document),
+                    new Dictionary<string, string>(0)));
+
+                if (ResponseValidator.Validate(response))
+                    return JsonConvert.DeserializeObject<T>(response.Text);
+
+                throw new SpicaServerException();
+            }
         }
     }
 }
