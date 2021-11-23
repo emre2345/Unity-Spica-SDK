@@ -29,10 +29,10 @@ namespace SpicaSDK.Services
 
         public string BucketUrl(Id bucketId) => $"{rootUrl}/api/bucket/{bucketId}";
 
-        public string BucketDataUrl(Id bucketId) => $"{rootUrl}/api/bucket/{bucketId}/data?{Identity.Token}";
+        public string BucketDataUrl(Id bucketId) => $"{rootUrl}/api/bucket/{bucketId}/data";
 
         public string BucketDataDocumentUrl(Id bucketId, Id documentId) =>
-            $"{rootUrl}/api/bucket/{bucketId}/data/{documentId}?{Identity.Token}";
+            $"{rootUrl}/api/bucket/{bucketId}/data/{documentId}";
 
         public string IdentityUrl => $"{rootUrl}/api/passport/identify";
 

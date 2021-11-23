@@ -8,7 +8,7 @@ namespace SpicaSDK.Interfaces
         IWebSocketConnection Connect(string url);
     }
 
-    public interface IWebSocketConnection : IObservable<Message>
+    public interface IWebSocketConnection : IObservable<ServerMessage>
     {
         void Disconnect();
 

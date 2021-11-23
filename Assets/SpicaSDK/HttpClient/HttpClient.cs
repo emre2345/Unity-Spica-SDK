@@ -45,6 +45,10 @@ namespace SpicaSDK
             return CreateAndSendRequest(() =>
             {
                 var req = new UnityWebRequest(request.Url, "patch");
+                var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(request.Payload));
+                uploadHandler.contentType = "application/json";
+                req.uploadHandler = uploadHandler;
+                req.downloadHandler = new DownloadHandlerBuffer();
                 SetHeaders(req, request.Headers);
                 return req;
             });
@@ -55,6 +59,7 @@ namespace SpicaSDK
             return CreateAndSendRequest(() =>
             {
                 var req = new UnityWebRequest(request.Url, "delete");
+                req.downloadHandler = new DownloadHandlerBuffer();
                 SetHeaders(req, request.Headers);
                 return req;
             });
@@ -65,6 +70,10 @@ namespace SpicaSDK
             return CreateAndSendRequest(() =>
             {
                 var req = new UnityWebRequest(request.Url, "put");
+                var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(request.Payload));
+                uploadHandler.contentType = "application/json";
+                req.uploadHandler = uploadHandler;
+                req.downloadHandler = new DownloadHandlerBuffer();
                 SetHeaders(req, request.Headers);
                 return req;
             });
@@ -76,7 +85,7 @@ namespace SpicaSDK
             {
                 var url = request.Url;
                 if (!string.IsNullOrEmpty(request.Payload))
-                    url += request.Payload;
+                    url += $"?{request.Payload}";
                 
                 var req = UnityWebRequest.Get(url);
                 SetHeaders(req, request.Headers);
