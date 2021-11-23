@@ -25,16 +25,18 @@ namespace SpicaSDK.Services
             public DocumentChange<T> WatchDocument<T>(Id bucketId, Id documentId) where T : class
             {
                 QueryParams queryParams = new QueryParams(1);
-                queryParams.AddQuery("filter", $"_id=={documentId.Value}");
+                queryParams.AddQuery("filter", $"_id==\"{documentId.Value}\"");
+                queryParams.AddQuery("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
 
-                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "&" + queryParams.QueryString;
-                IObservable<Message> connection = webSocketClient.Connect(url);
+                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.QueryString;
+                IWebSocketConnection connection = webSocketClient.Connect(url);
                 return new DocumentChange<T>(connection);
             }
 
             public BucketConnection<T> ConnectToBucket<T>(Id bucketId, QueryParams queryParams) where T : class
             {
-                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "&" + queryParams.QueryString;
+                queryParams.AddQuery("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
+                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.QueryString;
                 return new BucketConnection<T>(webSocketClient.Connect(url));
             }
         }

@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
@@ -32,21 +33,24 @@ namespace SpicaSDK.Services.WebSocketClient
 
         public WebSocketConnection(WebSocket socket)
         {
+            subscriptions = new CompositeDisposable(16);
+
             this.socket = socket;
-            
+
             ObserveOpen.First()
                 .Subscribe(unit => Debug.Log($"[ {nameof(WebSocketClient)} ] Connection established"));
 
-            ObserveError.Subscribe(s => Debug.LogError($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
+            ObserveError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
         }
 
-        public IDisposable Subscribe(IObserver<Message> observer)
+        public IDisposable Subscribe(IObserver<ServerMessage> observer)
         {
             update = Observable.EveryUpdate().Subscribe(l => this.socket.DispatchMessageQueue());
 
             return ObserveState.Where(state => state == WebSocketState.Open).Select(state =>
             {
-                return ObserveMessage.Select(s => JsonConvert.DeserializeObject<Message>(s));
+                return ObserveMessage.Do(s => Debug.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}"))
+                    .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s));
             }).Switch().Subscribe(observer).AddTo(subscriptions);
         }
 
@@ -54,8 +58,8 @@ namespace SpicaSDK.Services.WebSocketClient
         public void Disconnect()
         {
             update.Dispose();
-            socket.Close();
             subscriptions.Clear();
+            socket.Close();
         }
 
         public void SendMessage(string message)

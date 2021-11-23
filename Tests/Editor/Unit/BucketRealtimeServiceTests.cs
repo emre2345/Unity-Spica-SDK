@@ -33,7 +33,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     });
 
             private void WhenWebSocketSubscribed(IWebSocketConnection connection, Func<CallInfo, IDisposable> dlg) =>
-                connection.Subscribe(Arg.Any<IObserver<Message>>()).Returns(dlg);
+                connection.Subscribe(Arg.Any<IObserver<ServerMessage>>()).Returns(dlg);
 
             private (BucketService, IWebSocketClient) MockBucketService
             {
@@ -62,9 +62,9 @@ namespace SpicaSDK.Tests.Editor.Unit
                     return firstData.ObserveEveryValueChanged(model => model.Title).Skip(1).Select(s =>
                     {
                         var newData = new TestBucketDataModel(firstData.Id.Value, s, firstData.Description);
-                        return new Message(DataChangeType.Update, HttpStatusCode.OK,
+                        return new ServerMessage(DataChangeType.Update,
                             JsonConvert.SerializeObject(newData));
-                    }).Subscribe(info.Arg<IObserver<Message>>());
+                    }).Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
 
                 DocumentChange<TestBucketDataModel> documentConnection =
@@ -97,11 +97,11 @@ namespace SpicaSDK.Tests.Editor.Unit
                 // ---
 
                 webSocketClient.Connect(string.Empty).ReturnsForAnyArgs(webSocketConnection);
-                webSocketConnection.Subscribe(Arg.Any<IObserver<Message>>()).Returns(delegate(CallInfo info)
+                webSocketConnection.Subscribe(Arg.Any<IObserver<ServerMessage>>()).Returns(delegate(CallInfo info)
                 {
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Select(list =>
-                            new Message(DataChangeType.Insert, HttpStatusCode.OK, JsonConvert.SerializeObject(newData)))
-                        .Subscribe(info.Arg<IObserver<Message>>());
+                            new ServerMessage(DataChangeType.Insert, JsonConvert.SerializeObject(newData)))
+                        .Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
 
                 // ---
@@ -115,7 +115,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 CancellationTokenSource source = new CancellationTokenSource();
                 bucketConnection.Subscribe(message =>
                 {
-                    Assert.IsTrue(message.ChangeType == DataChangeType.Insert);
+                    Assert.IsTrue(message.Kind == DataChangeType.Insert);
                     source.Cancel();
                 });
 
@@ -150,9 +150,9 @@ namespace SpicaSDK.Tests.Editor.Unit
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i > TestDatas.Length)
                         .Select(
                             list =>
-                                new Message(DataChangeType.Insert, HttpStatusCode.OK,
+                                new ServerMessage(DataChangeType.Insert,
                                     JsonConvert.SerializeObject(newData)))
-                        .Subscribe(info.Arg<IObserver<Message>>());
+                        .Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
                 // ---
 
@@ -162,7 +162,7 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 bucketConnection.Subscribe(message =>
                 {
-                    Assert.IsTrue(message.ChangeType == DataChangeType.Insert);
+                    Assert.IsTrue(message.Kind == DataChangeType.Insert);
                     Assert.IsTrue(message.Document.Title == newData.Title &&
                                   message.Document.Description == newData.Description);
                     source.Cancel();
@@ -192,9 +192,9 @@ namespace SpicaSDK.Tests.Editor.Unit
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i < TestDatas.Length)
                         .Select(i =>
                         {
-                            return new Message(DataChangeType.Delete, HttpStatusCode.OK,
+                            return new ServerMessage(DataChangeType.Delete,
                                 JsonConvert.SerializeObject(deletedData));
-                        }).Subscribe(info.Arg<IObserver<Message>>());
+                        }).Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
@@ -203,7 +203,7 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 bucketConnection.Subscribe(change =>
                 {
-                    Assert.IsTrue(change.ChangeType == DataChangeType.Delete);
+                    Assert.IsTrue(change.Kind == DataChangeType.Delete);
                     Assert.IsTrue(change.Document.Title == deletedData.Title &&
                                   change.Document.Description == deletedData.Description);
                     source.Cancel();
@@ -232,9 +232,9 @@ namespace SpicaSDK.Tests.Editor.Unit
                 {
                     return datas[0].ObserveEveryValueChanged(model => model.Title).Skip(1).Select(i =>
                     {
-                        return new Message(DataChangeType.Update, HttpStatusCode.OK,
+                        return new ServerMessage(DataChangeType.Update,
                             JsonConvert.SerializeObject(new TestBucketDataModel(newTitle, patchedData.Description)));
-                    }).Subscribe(info.Arg<IObserver<Message>>());
+                    }).Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
@@ -243,7 +243,7 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 bucketConnection.Subscribe(change =>
                 {
-                    Assert.IsTrue(change.ChangeType == DataChangeType.Update);
+                    Assert.IsTrue(change.Kind == DataChangeType.Update);
                     Assert.IsTrue(change.Document.Title == newTitle);
                     source.Cancel();
                 });
@@ -270,9 +270,9 @@ namespace SpicaSDK.Tests.Editor.Unit
                 {
                     return datas.ObserveEveryValueChanged(list => list[0]).Skip(1).Select(i =>
                     {
-                        return new Message(DataChangeType.Replace, HttpStatusCode.OK,
+                        return new ServerMessage(DataChangeType.Replace,
                             JsonConvert.SerializeObject(replacedData));
-                    }).Subscribe(info.Arg<IObserver<Message>>());
+                    }).Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
@@ -281,7 +281,7 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 bucketConnection.Subscribe(change =>
                 {
-                    Assert.IsTrue(change.ChangeType == DataChangeType.Replace);
+                    Assert.IsTrue(change.Kind == DataChangeType.Replace);
                     Assert.IsTrue(change.Document.Title == replacedData.Title);
                     Assert.IsTrue(change.Document.Description == replacedData.Description);
                     source.Cancel();

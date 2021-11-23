@@ -12,6 +12,7 @@ namespace SpicaSDK.Services.WebSocketClient
         
         public IWebSocketConnection Connect(string url)
         {
+            Debug.Log($"WS Connecting to: {url}");
             var socket = new WebSocket(url);
             socket.Connect();
             return new WebSocketConnection(socket);
