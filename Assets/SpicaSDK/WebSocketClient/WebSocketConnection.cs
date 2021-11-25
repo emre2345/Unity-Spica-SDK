@@ -14,22 +14,12 @@ namespace SpicaSDK.Services.WebSocketClient
         private IDisposable update;
         private CompositeDisposable subscriptions;
 
+        private bool disconnected;
 
-        private IObservable<Unit> ObserveOpen =>
-            Observable.FromEvent<WebSocketOpenEventHandler, Unit>(action => () => action.Invoke(Unit.Default),
-                action => socket.OnOpen += action, action => socket.OnOpen -= action);
-
-        private IObservable<string> ObserveError => Observable.FromEvent<WebSocketErrorEventHandler, string>(
-            action => (s) => action.Invoke(s),
-            action => socket.OnError += action, action => socket.OnError -= action);
-
-        private IObservable<string> ObserveMessage =>
-            Observable.FromEvent<WebSocketMessageEventHandler, string>(action =>
-                    (data => action.Invoke(System.Text.Encoding.UTF8.GetString(data))),
-                handler => socket.OnMessage += handler, handler => socket.OnMessage -= handler);
-
-        private IObservable<WebSocketState> ObserveState =>
-            socket.ObserveEveryValueChanged(webSocket => webSocket.State);
+        private IObservable<Unit> observeOpen;
+        private IObservable<string> observeError;
+        private IObservable<string> observeMessage;
+        private IObservable<WebSocketState> observeState;
 
         public WebSocketConnection(WebSocket socket)
         {
@@ -37,34 +27,55 @@ namespace SpicaSDK.Services.WebSocketClient
 
             this.socket = socket;
 
-            ObserveOpen.First()
+            CreateObservables();
+
+            observeOpen.First()
                 .Subscribe(unit => Debug.Log($"[ {nameof(WebSocketClient)} ] Connection established"));
 
-            ObserveError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
+            observeError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
+
+            update = Observable.EveryUpdate().Subscribe(l => this.socket.DispatchMessageQueue());
+        }
+
+        void CreateObservables()
+        {
+            observeOpen = Observable.FromEvent<WebSocketOpenEventHandler, Unit>(
+                action => () => action.Invoke(Unit.Default),
+                action => socket.OnOpen += action, action => socket.OnOpen -= action).Share();
+
+            observeError = Observable.FromEvent<WebSocketErrorEventHandler, string>(
+                action => (s) => action.Invoke(s),
+                action => socket.OnError += action, action => socket.OnError -= action).Share();
+
+            observeMessage =
+                Observable.FromEvent<WebSocketMessageEventHandler, string>(action =>
+                        (data => action.Invoke(System.Text.Encoding.UTF8.GetString(data))),
+                    handler => socket.OnMessage += handler, handler => socket.OnMessage -= handler).Do(s =>
+                    Debug.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}")).Share();
+
+            observeState = socket.ObserveEveryValueChanged(webSocket => webSocket.State).Share();
         }
 
         public IDisposable Subscribe(IObserver<ServerMessage> observer)
         {
-            update = Observable.EveryUpdate().Subscribe(l => this.socket.DispatchMessageQueue());
-
-            return ObserveState.Where(state => state == WebSocketState.Open).Select(state =>
-            {
-                return ObserveMessage.Do(s => Debug.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}"))
-                    .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s));
-            }).Switch().Subscribe(observer).AddTo(subscriptions);
+            return observeMessage
+                .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s)).Subscribe(observer).AddTo(subscriptions);
         }
 
-
-        public void Disconnect()
+        public async UniTask DisconnectAsync()
         {
+            disconnected = true;
             update.Dispose();
             subscriptions.Clear();
-            socket.Close();
+            await socket.Close();
         }
 
-        public void SendMessage(string message)
+        public async UniTask SendMessageAsync(string message)
         {
-            socket.SendText(message);
+            if (disconnected)
+                return;
+
+            await socket.SendText(message);
         }
     }
 }
