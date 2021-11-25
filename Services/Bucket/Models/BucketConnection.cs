@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Services.WebSocketClient;
@@ -28,7 +29,7 @@ namespace SpicaSDK.Services.Models
 
         private IWebSocketConnection connection;
         private CompositeDisposable subscriptions;
-        private Subject<BucketChange<T>> serverResponse;
+
 
         public BucketConnection(IWebSocketConnection connection)
         {
@@ -39,61 +40,61 @@ namespace SpicaSDK.Services.Models
 
         public IDisposable Subscribe(IObserver<BucketChange<T>> observer)
         {
-            return connection.Where(delegate(ServerMessage message)
-            {
-                if (message.Kind == DataChangeType.Response)
+            return connection.Where(message =>
+                    message.Kind != DataChangeType.Response && message.Kind != DataChangeType.EndOfInitial)
+                .Select(message =>
                 {
-                    serverResponse?.OnNext(new BucketChange<T>(DataChangeType.Response, null,
-                        (HttpStatusCode)message.Status, message.Message));
-                    return false;
-                }
+                    if (message.Kind == DataChangeType.Error)
+                        return new BucketChange<T>(DataChangeType.Error, null);
 
-                return message.Kind != DataChangeType.EndOfInitial;
-            }).Select(message =>
-            {
-                if (message.Kind == DataChangeType.Error)
-                    return new BucketChange<T>(DataChangeType.Error, null);
-
-                return new BucketChange<T>(message.Kind,
-                    message.Document.ToObject<T>());
-            }).Subscribe(observer).AddTo(subscriptions);
+                    return new BucketChange<T>(message.Kind,
+                        message.Document.ToObject<T>());
+                }).Subscribe(observer).AddTo(subscriptions);
         }
 
         public IObservable<BucketChange<T>> Insert(T document)
         {
-            ApplyOperation(RealtimeMessageEvents.Insert, document);
-            return serverResponse = new Subject<BucketChange<T>>();
+            ApplyOperationAsync(RealtimeMessageEvents.Insert, document);
+            return connection.Where(message => message.Kind == DataChangeType.Response).First().Select(message =>
+                new BucketChange<T>(DataChangeType.Response, null,
+                    (HttpStatusCode)message.Status, message.Message));
         }
 
         public IObservable<BucketChange<T>> Delete(T document)
         {
-            ApplyOperation(RealtimeMessageEvents.Delete, document);
-            return serverResponse = new Subject<BucketChange<T>>();
+            ApplyOperationAsync(RealtimeMessageEvents.Delete, document);
+            return connection.Where(message => message.Kind == DataChangeType.Response).First().Select(message =>
+                new BucketChange<T>(DataChangeType.Response, null,
+                    (HttpStatusCode)message.Status, message.Message));
         }
 
         public IObservable<BucketChange<T>> Patch(T document)
         {
-            ApplyOperation(RealtimeMessageEvents.Patch, document);
-            return serverResponse = new Subject<BucketChange<T>>();
+            ApplyOperationAsync(RealtimeMessageEvents.Patch, document);
+            return connection.Where(message => message.Kind == DataChangeType.Response).First().Select(message =>
+                new BucketChange<T>(DataChangeType.Response, null,
+                    (HttpStatusCode)message.Status, message.Message));
         }
 
         public IObservable<BucketChange<T>> Replace(T document)
         {
-            ApplyOperation(RealtimeMessageEvents.Replace, document);
-            return serverResponse = new Subject<BucketChange<T>>();
+            ApplyOperationAsync(RealtimeMessageEvents.Replace, document);
+            return connection.Where(message => message.Kind == DataChangeType.Response).First().Select(message =>
+                new BucketChange<T>(DataChangeType.Response, null,
+                    (HttpStatusCode)message.Status, message.Message));
         }
 
-        private void ApplyOperation(string @event, T document)
+        private async UniTask ApplyOperationAsync(string @event, T document)
         {
             var message = new { @event = @event, data = document };
 
-            connection.SendMessage(JsonConvert.SerializeObject(message));
+            await connection.SendMessageAsync(JsonConvert.SerializeObject(message));
         }
 
         public void Dispose()
         {
             subscriptions.Clear();
-            connection.Disconnect();
+            connection.DisconnectAsync();
         }
     }
 }

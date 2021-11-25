@@ -1,17 +1,18 @@
 using System;
+using Cysharp.Threading.Tasks;
 using SpicaSDK.Services.WebSocketClient;
 
 namespace SpicaSDK.Interfaces
 {
-    public interface IWebSocketClient
+    public interface IWebSocketClient : IDisposable
     {
-        IWebSocketConnection Connect(string url);
+        UniTask<IWebSocketConnection> ConnectAsync(string url);
     }
 
     public interface IWebSocketConnection : IObservable<ServerMessage>
     {
-        void Disconnect();
+        UniTask DisconnectAsync();
 
-        void SendMessage(string message);
+        UniTask SendMessageAsync(string message);
     }
 }

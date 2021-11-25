@@ -44,7 +44,7 @@ namespace SpicaSDK.Services.Models
             return connection.TakeWhile(CheckIfInitialReceived)
                 .Where(message => IsKindObservable(message.Kind) && message.Document != null)
                 .TakeWhile(message => message.Kind != DataChangeType.Delete)
-                .Select(message => message.Document.ToObject<T>()).Finally(() => connection.Disconnect())
+                .Select(message => message.Document.ToObject<T>()).Finally(() => connection.DisconnectAsync())
                 .Subscribe(observer);
         }
     }
