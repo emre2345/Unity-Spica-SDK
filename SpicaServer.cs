@@ -18,9 +18,9 @@ namespace SpicaSDK.Services
             this.httpClient = httpClient;
         }
 
-        public async UniTask<Response> Initialize()
+        public async UniTask<Response> InitializeAsync()
         {
-            var response = await httpClient.Get(new Request(rootUrl));
+            var response = await httpClient.GetAsync(new Request(rootUrl));
             IsAvailable = response.Success;
             return response;
         }

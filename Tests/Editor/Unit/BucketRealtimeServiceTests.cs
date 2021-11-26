@@ -68,7 +68,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 });
 
                 DocumentChange<TestBucketDataModel> documentConnection =
-                    await bucketService.Realtime.WatchDocument<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
+                    await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
 
                 string newTitle = "newTitle";
 
@@ -108,7 +108,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 // ---
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 // ---
@@ -159,7 +159,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 // ---
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 bucketConnection.Subscribe(message =>
@@ -201,7 +201,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 });
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 bucketConnection.Subscribe(change =>
@@ -242,7 +242,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 });
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 bucketConnection.Subscribe(change =>
@@ -281,7 +281,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 });
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 bucketConnection.Subscribe(change =>
@@ -310,7 +310,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     .Returns(info => new UniTask<IWebSocketConnection>(webSocketConnection));
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(TestBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 bucketConnection.Dispose();

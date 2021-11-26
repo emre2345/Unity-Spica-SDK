@@ -23,7 +23,7 @@ namespace SpicaSDK.Services
                 this.webSocketClient = webSocketClient;
             }
 
-            public async UniTask<DocumentChange<T>> WatchDocument<T>(Id bucketId, Id documentId) where T : class
+            public async UniTask<DocumentChange<T>> WatchDocumentAsync<T>(Id bucketId, Id documentId) where T : class
             {
                 QueryParams queryParams = new QueryParams(1);
                 queryParams.AddQuery("filter", $"_id==\"{documentId.Value}\"");
@@ -34,7 +34,7 @@ namespace SpicaSDK.Services
                 return new DocumentChange<T>(connection);
             }
 
-            public async UniTask<BucketConnection<T>> ConnectToBucket<T>(Id bucketId, QueryParams queryParams)
+            public async UniTask<BucketConnection<T>> ConnectToBucketAsync<T>(Id bucketId, QueryParams queryParams)
                 where T : class
             {
                 queryParams.AddQuery("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");

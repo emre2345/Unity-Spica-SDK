@@ -1,5 +1,6 @@
 using System.Collections;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
@@ -14,15 +15,13 @@ namespace SpicaSDK.Tests.Editor.Integration
     {
         public class DataTests
         {
-            private string testDataId = "619b8fb99e6618002e304164";
-
             async UniTask<(ISpicaServer spicaServer, IHttpClient httpClient)> Setup()
             {
                 IHttpClient httpClient = new HttpClient();
                 ISpicaServer spicaServer = new SpicaServer(url, httpClient);
 
                 IdentityService identityService = new IdentityService(spicaServer, httpClient);
-                spicaServer.Identity = await identityService.LogIn("spica", "spica", float.MaxValue);
+                spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);
 
                 return (spicaServer, httpClient);
             }
@@ -34,11 +33,20 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 BucketService bucketService =
                     new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
-                var data = await bucketService.Data.Get<TestBucketDataModel>(new Id(testBucketId), new Id(testDataId),
+
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+                var newData =
+                    await bucketService.Data.InsertAsync(new Id(newBucket.Id), new TestBucketDataModel("test", "test"));
+
+                var data = await bucketService.Data.GetAsync<TestBucketDataModel>(new Id(newBucket.Id),
+                    newData.Id,
                     new QueryParams());
 
                 Assert.NotNull(data);
-                Assert.AreEqual(testDataId, data.Id.Value);
+                Assert.AreEqual(newData.Id.Value, data.Id.Value);
+
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -48,11 +56,19 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 BucketService bucketService =
                     new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
-                var data = await bucketService.Data.GetAll<TestBucketDataModel>(new Id(testBucketId),
+
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+                await bucketService.Data.InsertAsync(new Id(newBucket.Id), new TestBucketDataModel("test", "test"));
+                await bucketService.Data.InsertAsync(new Id(newBucket.Id), new TestBucketDataModel("test", "test"));
+
+                var data = await bucketService.Data.GetAllAsync<TestBucketDataModel>(new Id(newBucket.Id),
                     new QueryParams());
 
                 Assert.NotNull(data);
                 Assert.IsTrue(data.Length > 0);
+
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -64,11 +80,16 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 BucketService bucketService =
                     new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
-                var data = await bucketService.Data.Insert<TestBucketDataModel>(new Id(testBucketId), newData);
+
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+                var data = await bucketService.Data.InsertAsync<TestBucketDataModel>(new Id(newBucket.Id), newData);
 
                 Assert.NotNull(data);
                 Assert.NotNull(data.Id);
                 Assert.IsTrue(!string.IsNullOrEmpty(data.Id.Value));
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -80,11 +101,17 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 BucketService bucketService =
                     new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
-                var insertedData = await bucketService.Data.Insert<TestBucketDataModel>(new Id(testBucketId), newData);
-                var patchedData = await bucketService.Data.Patch(new Id(testBucketId), insertedData.Id,
+
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+                var insertedData =
+                    await bucketService.Data.InsertAsync<TestBucketDataModel>(new Id(newBucket.Id), newData);
+                var patchedData = await bucketService.Data.PatchAsync(new Id(newBucket.Id), insertedData.Id,
                     new TestBucketDataModel("patchedData", "patchedDesc"));
 
                 Assert.NotNull(patchedData);
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
                 // Assert.AreSame(insertedData.Id, patchedData.Id);
             });
 
@@ -97,10 +124,16 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 BucketService bucketService =
                     new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
-                var insertedData = await bucketService.Data.Insert<TestBucketDataModel>(new Id(testBucketId), newData);
-                var deleted = await bucketService.Data.Remove(new Id(testBucketId), insertedData.Id);
+
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+                var insertedData =
+                    await bucketService.Data.InsertAsync<TestBucketDataModel>(new Id(newBucket.Id), newData);
+                var deleted = await bucketService.Data.RemoveAsync(new Id(newBucket.Id), insertedData.Id);
 
                 Assert.IsTrue(deleted);
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -112,12 +145,18 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 BucketService bucketService =
                     new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
-                var insertedData = await bucketService.Data.Insert<TestBucketDataModel>(new Id(testBucketId), newData);
-                var deleted = await bucketService.Data.Replace(new Id(testBucketId), insertedData.Id,
+
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+                var insertedData =
+                    await bucketService.Data.InsertAsync<TestBucketDataModel>(new Id(newBucket.Id), newData);
+                var deleted = await bucketService.Data.ReplaceAsync(new Id(newBucket.Id), insertedData.Id,
                     new TestBucketDataModel("replacedData", "replacedData"));
 
                 Assert.NotNull(deleted);
                 Assert.AreEqual(insertedData.Id, deleted.Id);
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
         }
     }

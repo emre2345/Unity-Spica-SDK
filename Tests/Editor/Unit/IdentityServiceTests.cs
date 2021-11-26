@@ -22,12 +22,12 @@ namespace SpicaSDK.Tests.Editor.Unit
             ISpicaServer server = Substitute.For<ISpicaServer>();
             IHttpClient client = Substitute.For<IHttpClient>();
 
-            client.Post(new Request())
+            client.PostAsync(new Request())
                 .ReturnsForAnyArgs(
                     new UniTask<Response>(new Response(HttpStatusCode.OK, "{'token':'IDENTITY someToken'}")));
 
             IdentityService identityService = new IdentityService(server, client);
-            Identity identity = await identityService.LogIn(this.identity, password, lifespan);
+            Identity identity = await identityService.LogInAsync(this.identity, password, lifespan);
 
             Assert.IsNotNull(identity.Token);
             Assert.IsNotEmpty(identity.Token);

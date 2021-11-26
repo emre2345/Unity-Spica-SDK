@@ -18,14 +18,14 @@ namespace SpicaSDK.Services.Services.Identity
             this.httpClient = httpClient;
         }
 
-        public async UniTask<Models.Identity> LogIn(string identity, string password, float lifespan)
+        public async UniTask<Models.Identity> LogInAsync(string identity, string password, float lifespan)
         {
             var payload = new Dictionary<string, object>(2);
             payload.Add("identifier", identity);
             payload.Add("password", password);
             payload.Add("expiry", lifespan);
             
-            var response = await httpClient.Post(new Request(server.IdentityUrl, JsonConvert.SerializeObject(payload)));
+            var response = await httpClient.PostAsync(new Request(server.IdentityUrl, JsonConvert.SerializeObject(payload)));
 
             if (!response.Success)
                 throw new Exception("Identity request failed");

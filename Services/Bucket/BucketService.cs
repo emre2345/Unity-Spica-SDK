@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Services.Exceptions;
 using SpicaSDK.Services.Models;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace SpicaSDK.Services
 {
@@ -25,14 +27,36 @@ namespace SpicaSDK.Services
             Realtime = new RealtimeService(server, webSocketClient);
         }
 
-        public async UniTask<Bucket> Get(Id id)
+        public async UniTask<Bucket> GetAsync(Id id)
         {
-            var response = await httpClient.Get(new Request(server.BucketUrl(id)));
+            var response = await httpClient.GetAsync(new Request(server.BucketUrl(id)));
 
             if (ResponseValidator.Validate(response))
             {
                 return JsonConvert.DeserializeObject<Bucket>(response.Text);
             }
+
+            throw new SpicaServerException();
+        }
+
+        public async UniTask<Bucket> CreateAsync(Bucket bucket)
+        {
+            var response =
+                await httpClient.PostAsync(new Request(server.BucketUrl(new Id()), JsonConvert.SerializeObject(bucket)));
+
+            if (ResponseValidator.Validate(response))
+                return JsonConvert.DeserializeObject<Bucket>(response.Text);
+
+            throw new SpicaServerException();
+        }
+
+        public async UniTask<HttpStatusCode> DeleteAsync(Id id)
+        {
+            var response =
+                await httpClient.DeleteAsync(new Request(server.BucketUrl(id)));
+
+            if (ResponseValidator.Validate(response))
+                return response.StatusCode;
 
             throw new SpicaServerException();
         }
@@ -48,9 +72,9 @@ namespace SpicaSDK.Services
                 this.httpClient = httpClient;
             }
 
-            public async UniTask<T> Get<T>(Id bucketId, Id documentId, QueryParams queryParams)
+            public async UniTask<T> GetAsync<T>(Id bucketId, Id documentId, QueryParams queryParams)
             {
-                var response = await httpClient.Get(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                var response = await httpClient.GetAsync(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
                     queryParams.QueryString,
                     new Dictionary<string, string>(0)));
 
@@ -60,9 +84,9 @@ namespace SpicaSDK.Services
                 throw new SpicaServerException();
             }
 
-            public async UniTask<T[]> GetAll<T>(Id bucketId, QueryParams queryParams)
+            public async UniTask<T[]> GetAllAsync<T>(Id bucketId, QueryParams queryParams)
             {
-                var response = await httpClient.Get(new Request(server.BucketDataUrl(bucketId),
+                var response = await httpClient.GetAsync(new Request(server.BucketDataUrl(bucketId),
                     queryParams.QueryString,
                     new Dictionary<string, string>(0)));
 
@@ -72,9 +96,9 @@ namespace SpicaSDK.Services
                 throw new SpicaServerException();
             }
 
-            public async UniTask<T> Insert<T>(Id bucketId, T document)
+            public async UniTask<T> InsertAsync<T>(Id bucketId, T document)
             {
-                var response = await httpClient.Post(new Request(server.BucketDataUrl(bucketId),
+                var response = await httpClient.PostAsync(new Request(server.BucketDataUrl(bucketId),
                     JsonConvert.SerializeObject(document),
                     new Dictionary<string, string>(0)));
 
@@ -84,9 +108,9 @@ namespace SpicaSDK.Services
                 throw new SpicaServerException();
             }
 
-            public async UniTask<T> Patch<T>(Id bucketId, Id documentId, T document)
+            public async UniTask<T> PatchAsync<T>(Id bucketId, Id documentId, T document)
             {
-                var response = await httpClient.Patch(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                var response = await httpClient.PatchAsync(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
                     JsonConvert.SerializeObject(document),
                     new Dictionary<string, string>(0)));
 
@@ -96,9 +120,9 @@ namespace SpicaSDK.Services
                 throw new SpicaServerException();
             }
 
-            public async UniTask<bool> Remove(Id bucketId, Id documentId)
+            public async UniTask<bool> RemoveAsync(Id bucketId, Id documentId)
             {
-                var response = await httpClient.Delete(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                var response = await httpClient.DeleteAsync(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
                     string.Empty,
                     new Dictionary<string, string>(0)));
 
@@ -108,9 +132,9 @@ namespace SpicaSDK.Services
                 throw new SpicaServerException();
             }
 
-            public async UniTask<T> Replace<T>(Id bucketId, Id documentId, T document)
+            public async UniTask<T> ReplaceAsync<T>(Id bucketId, Id documentId, T document)
             {
-                var response = await httpClient.Put(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
+                var response = await httpClient.PutAsync(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
                     JsonConvert.SerializeObject(document),
                     new Dictionary<string, string>(0)));
 

@@ -18,7 +18,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         {
             IHttpClient client = new HttpClient();
             ISpicaServer server = new SpicaServer(url, client);
-            await server.Initialize();
+            await server.InitializeAsync();
 
             Assert.IsTrue(server.IsAvailable);
         });
@@ -31,7 +31,7 @@ namespace SpicaSDK.Tests.Editor.Integration
 
             try
             {
-                await server.Initialize();
+                await server.InitializeAsync();
             }
             catch (UnityWebRequestException e)
             {
