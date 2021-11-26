@@ -4,6 +4,7 @@ using System.Collections;
 using System.Net;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Services;
@@ -38,7 +39,7 @@ namespace SpicaSDK.Tests.Editor.Integration
             private async UniTask Login()
             {
                 IdentityService identityService = new IdentityService(spicaServer, httpClient);
-                spicaServer.Identity = await identityService.LogIn("spica", "spica", float.MaxValue);
+                spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);
             }
 
             public void Cleanup()
@@ -60,10 +61,13 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 var newTitle = "updatedTitle";
 
-                var data = await bucketService.Data.Insert<TestBucketDataModel>(new Id(testBucketId),
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+                var data = await bucketService.Data.InsertAsync<TestBucketDataModel>(new Id(newBucket.Id),
                     new TestBucketDataModel("newTitle", "newDesc"));
                 var documentWatch =
-                    await bucketService.Realtime.WatchDocument<TestBucketDataModel>(new Id(testBucketId), data.Id);
+                    await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id), data.Id);
 
                 documentWatch.Do(model => Debug.Log(model.ToString())).Skip(1).Subscribe(
                     delegate(TestBucketDataModel model)
@@ -75,12 +79,14 @@ namespace SpicaSDK.Tests.Editor.Integration
                 await UniTask.Delay(1);
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(delegate(UniRx.Unit unit)
                 {
-                    bucketService.Data.Replace(new Id(testBucketId), data.Id,
+                    bucketService.Data.ReplaceAsync(new Id(newBucket.Id), data.Id,
                         new TestBucketDataModel(newTitle, data.Description));
                 });
 
                 await UniTask.WaitUntilCanceled(cancellationTokenSource.Token)
                     .Timeout(TimeSpan.FromSeconds(5));
+
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -91,10 +97,13 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 await Login();
 
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
                 var data = await bucketService.Data
-                    .Insert<TestBucketDataModel>(new Id(testBucketId), new TestBucketDataModel("q", "q2"));
+                    .InsertAsync<TestBucketDataModel>(new Id(newBucket.Id), new TestBucketDataModel("q", "q2"));
                 var documentWatch =
-                    await bucketService.Realtime.WatchDocument<TestBucketDataModel>(new Id(testBucketId), data.Id);
+                    await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id), data.Id);
 
                 documentWatch.Subscribe(model => { },
                     () =>
@@ -108,10 +117,11 @@ namespace SpicaSDK.Tests.Editor.Integration
                 await UniTask.Delay(1);
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(delegate(UniRx.Unit unit)
                 {
-                    bucketService.Data.Remove(new Id(testBucketId), data.Id);
+                    bucketService.Data.RemoveAsync(new Id(newBucket.Id), data.Id);
                 });
 
                 await UniTask.WaitUntilCanceled(cancellationTokenSource.Token).Timeout(TimeSpan.FromSeconds(5));
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -122,8 +132,11 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 await Login();
 
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
                 var documentWatch =
-                    await bucketService.Realtime.WatchDocument<TestBucketDataModel>(new Id(testBucketId),
+                    await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new Id("nonExistingId"));
 
                 documentWatch.Subscribe(model => { },
@@ -135,6 +148,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     }).AddTo(disposable);
 
                 await UniTask.WaitUntilCanceled(cancellationTokenSource.Token).Timeout(TimeSpan.FromSeconds(5));
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -146,8 +160,12 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 await Login();
 
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+
                 var bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(testBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new QueryParams());
 
                 bucketConnection.Where(change => change.Kind != DataChangeType.Initial).Subscribe(change =>
@@ -159,11 +177,12 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 await UniTask.Delay(1);
                 Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit =>
-                    bucketService.Data.Insert(new Id(testBucketId), new TestBucketDataModel("t1", "d1")));
+                    bucketService.Data.InsertAsync(new Id(newBucket.Id), new TestBucketDataModel("t1", "d1")));
 
                 disposable.Add(bucketConnection);
 
                 await UniTask.WaitUntilCanceled(cancellationTokenSource.Token).Timeout(TimeSpan.FromSeconds(5));
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
 
             [UnityTest]
@@ -174,8 +193,12 @@ namespace SpicaSDK.Tests.Editor.Integration
 
                 await Login();
 
+                Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+                Bucket newBucket = await bucketService.CreateAsync(bucket);
+
+
                 var bucketConnection =
-                    await bucketService.Realtime.ConnectToBucket<TestBucketDataModel>(new Id(testBucketId),
+                    await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new QueryParams());
 
                 var task1 = bucketConnection.Where(change => change.Kind != DataChangeType.Initial).Do(
@@ -202,6 +225,8 @@ namespace SpicaSDK.Tests.Editor.Integration
                 disposable.Add(bucketConnection);
 
                 await UniTask.WaitUntilCanceled(cancellationTokenSource.Token).Timeout(TimeSpan.FromSeconds(5));
+
+                await bucketService.DeleteAsync(new Id(newBucket.Id));
             });
         }
     }

@@ -5,16 +5,6 @@ namespace SpicaSDK.Services.Models
 {
     public class Bucket
     {
-        public class BucketProperties
-        {
-            public JObject[] Fields { get; }
-
-            public BucketProperties(JObject[] fields)
-            {
-                Fields = fields;
-            }
-        }
-
         [JsonConstructor]
         public Bucket(
             [JsonProperty("_id")] string id,
@@ -24,7 +14,7 @@ namespace SpicaSDK.Services.Models
             [JsonProperty("primary")] string primary,
             [JsonProperty("readOnly")] bool readOnly,
             [JsonProperty("history")] bool history,
-            // [JsonProperty("properties")] BucketProperties properties,
+            [JsonProperty("properties")] JObject properties,
             [JsonProperty("order")] int order
         )
         {
@@ -35,7 +25,7 @@ namespace SpicaSDK.Services.Models
             Primary = primary;
             ReadOnly = readOnly;
             History = history;
-            // Properties = properties;
+            Properties = properties;
             Order = order;
         }
 
@@ -55,6 +45,6 @@ namespace SpicaSDK.Services.Models
 
         [JsonProperty("order")] public int Order { get; }
 
-        [JsonProperty("properties")] public BucketProperties Properties { get; }
+        [JsonProperty("properties")] public JObject Properties { get; }
     }
 }

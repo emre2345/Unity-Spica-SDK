@@ -19,14 +19,14 @@ namespace SpicaSDK
 
         public void AddDefaultHeader(string key, string value)
         {
-            if(!defaultHeaders.ContainsKey(key))
+            if (!defaultHeaders.ContainsKey(key))
                 defaultHeaders.Add(key, string.Empty);
 
             defaultHeaders[key] = value;
         }
 
 
-        UniTask<Response> IHttpClient.Post(Request request)
+        public UniTask<Response> PostAsync(Request request)
         {
             return CreateAndSendRequest(() =>
             {
@@ -40,7 +40,7 @@ namespace SpicaSDK
             });
         }
 
-        public UniTask<Response> Patch(Request request)
+        public UniTask<Response> PatchAsync(Request request)
         {
             return CreateAndSendRequest(() =>
             {
@@ -54,7 +54,7 @@ namespace SpicaSDK
             });
         }
 
-        public UniTask<Response> Delete(Request request)
+        public UniTask<Response> DeleteAsync(Request request)
         {
             return CreateAndSendRequest(() =>
             {
@@ -65,7 +65,7 @@ namespace SpicaSDK
             });
         }
 
-        public UniTask<Response> Put(Request request)
+        public UniTask<Response> PutAsync(Request request)
         {
             return CreateAndSendRequest(() =>
             {
@@ -79,14 +79,14 @@ namespace SpicaSDK
             });
         }
 
-        UniTask<Response> IHttpClient.Get(Request request)
+        public UniTask<Response> GetAsync(Request request)
         {
             return CreateAndSendRequest(() =>
             {
                 var url = request.Url;
                 if (!string.IsNullOrEmpty(request.Payload))
                     url += $"?{request.Payload}";
-                
+
                 var req = UnityWebRequest.Get(url);
                 SetHeaders(req, request.Headers);
                 return req;
@@ -105,9 +105,9 @@ namespace SpicaSDK
         {
             var req = factory();
             req.SetRequestHeader("Content-Type", "application/json");
-            
+
             SetHeaders(req, defaultHeaders);
-            
+
             var operation = await req.SendWebRequest();
             return new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
         }

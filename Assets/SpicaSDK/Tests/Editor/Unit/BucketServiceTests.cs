@@ -71,13 +71,13 @@ namespace SpicaSDK.Tests.Editor.Unit
             ISpicaServer server = Substitute.For<ISpicaServer>();
             IHttpClient client = Substitute.For<IHttpClient>();
 
-            client.Get(new Request(server.BucketUrl(new Id(bucketId)))).Returns(info =>
+            client.GetAsync(new Request(server.BucketUrl(new Id(bucketId)))).Returns(info =>
                 new UniTask<Response>(new Response(HttpStatusCode.Unauthorized,
                     "{\"statusCode\":401,\"message\":\"No auth token\",\"error\":\"Unauthorized\"}")));
 
             try
             {
-                await new BucketService(server, client, MockWebSocketClient).Get(new Id(bucketId));
+                await new BucketService(server, client, MockWebSocketClient).GetAsync(new Id(bucketId));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -93,19 +93,19 @@ namespace SpicaSDK.Tests.Editor.Unit
             ISpicaServer server = Substitute.For<ISpicaServer>();
             IHttpClient client = Substitute.For<IHttpClient>();
 
-            client.Post(new Request())
+            client.PostAsync(new Request())
                 .ReturnsForAnyArgs(
                     new UniTask<Response>(new Response(HttpStatusCode.OK, "{'token':'IDENTITY someToken'}")));
 
-            client.Get(new Request(server.BucketUrl(new Id(bucketId)))).Returns(info =>
+            client.GetAsync(new Request(server.BucketUrl(new Id(bucketId)))).Returns(info =>
                 new UniTask<Response>(new Response(HttpStatusCode.OK, TestBucketDataAsJson)));
 
             IdentityService identityService = new IdentityService(server, client);
-            Identity identity = await identityService.LogIn("identity", "password", float.MaxValue);
+            Identity identity = await identityService.LogInAsync("identity", "password", float.MaxValue);
             server.Identity = identity;
 
             BucketService bucketService = new BucketService(server, client, MockWebSocketClient);
-            Bucket bucket = await bucketService.Get(new Id(bucketId));
+            Bucket bucket = await bucketService.GetAsync(new Id(bucketId));
 
             Assert.NotNull(bucket);
             Assert.IsTrue(bucketId.Equals(bucket.Id));

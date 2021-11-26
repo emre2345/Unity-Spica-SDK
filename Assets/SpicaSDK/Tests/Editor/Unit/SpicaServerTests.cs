@@ -17,11 +17,11 @@ namespace SpicaSDK.Tests.Editor.Unit
         public IEnumerator Connects() => UniTask.ToCoroutine(async delegate()
         {
             IHttpClient client = Substitute.For<IHttpClient>();
-            client.Get(new Request())
+            client.GetAsync(new Request())
                 .ReturnsForAnyArgs(new UniTask<Response>(new Response(HttpStatusCode.OK, string.Empty)));
 
             ISpicaServer server = new SpicaServer(rootUrl, client);
-            await server.Initialize();
+            await server.InitializeAsync();
 
             Assert.IsTrue(server.IsAvailable);
         });
@@ -30,11 +30,11 @@ namespace SpicaSDK.Tests.Editor.Unit
         public IEnumerator CantConnect() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient client = Substitute.For<IHttpClient>();
-            client.Get(new Request())
+            client.GetAsync(new Request())
                 .ReturnsForAnyArgs(new UniTask<Response>(new Response(HttpStatusCode.NotFound, string.Empty)));
 
             ISpicaServer server = new SpicaServer("falseUrl", client);
-            await server.Initialize();
+            await server.InitializeAsync();
 
             Assert.IsFalse(server.IsAvailable);
         });

@@ -7,14 +7,14 @@ namespace SpicaSDK.Interfaces
     {
         void AddDefaultHeader(string key, string value);
         
-        UniTask<Response> Get(Request request);
+        UniTask<Response> GetAsync(Request request);
 
-        UniTask<Response> Post(Request request);
+        UniTask<Response> PostAsync(Request request);
 
-        UniTask<Response> Patch(Request request);
+        UniTask<Response> PatchAsync(Request request);
 
-        UniTask<Response> Delete(Request request);
+        UniTask<Response> DeleteAsync(Request request);
 
-        UniTask<Response> Put(Request request);
+        UniTask<Response> PutAsync(Request request);
     }
 }

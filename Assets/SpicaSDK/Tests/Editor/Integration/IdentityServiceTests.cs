@@ -27,7 +27,7 @@ namespace SpicaSDK.Tests.Editor.Integration
             ISpicaServer server = new SpicaServer(url, client);
 
             IdentityService identityService = new IdentityService(server, client);
-            Identity identity = await identityService.LogIn(this.identity, password, lifespan);
+            Identity identity = await identityService.LogInAsync(this.identity, password, lifespan);
 
             Debug.Log(identity);
             Assert.IsNotNull(identity.Token);
