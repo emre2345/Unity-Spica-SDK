@@ -20,7 +20,7 @@ namespace SpicaSDK.Tests.Editor.Unit
             client.GetAsync(new Request())
                 .ReturnsForAnyArgs(new UniTask<Response>(new Response(HttpStatusCode.OK, string.Empty)));
 
-            ISpicaServer server = new SpicaServer(rootUrl, client);
+            ISpicaServer server = new SpicaServer(new SpicaServerUrl(rootUrl), client);
             await server.InitializeAsync();
 
             Assert.IsTrue(server.IsAvailable);
@@ -33,7 +33,7 @@ namespace SpicaSDK.Tests.Editor.Unit
             client.GetAsync(new Request())
                 .ReturnsForAnyArgs(new UniTask<Response>(new Response(HttpStatusCode.NotFound, string.Empty)));
 
-            ISpicaServer server = new SpicaServer("falseUrl", client);
+            ISpicaServer server = new SpicaServer(new SpicaServerUrl("falseUrl"), client);
             await server.InitializeAsync();
 
             Assert.IsFalse(server.IsAvailable);

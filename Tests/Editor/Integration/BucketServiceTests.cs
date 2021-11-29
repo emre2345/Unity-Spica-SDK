@@ -54,7 +54,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         public IEnumerator GetThrowsUnauthorized() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient httpClient = new HttpClient();
-            ISpicaServer spicaServer = new SpicaServer(url, httpClient);
+            ISpicaServer spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
 
             try
             {
@@ -68,20 +68,45 @@ namespace SpicaSDK.Tests.Editor.Integration
         });
 
         [UnityTest]
-        public IEnumerator Get() => UniTask.ToCoroutine(async delegate
+        public IEnumerator GetAll() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient httpClient = new HttpClient();
-            ISpicaServer spicaServer = new SpicaServer(url, httpClient);
+            ISpicaServer spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
 
             IdentityService identityService = new IdentityService(spicaServer, httpClient);
             spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);
-            
+
+            Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
+            var bucketService = new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
+            await bucketService.CreateAsync(bucket);
+            await bucketService.CreateAsync(bucket);
+
+            var buckets = await bucketService.GetAllAsync();
+
+            Assert.IsNotNull(buckets);
+            Assert.IsNotNull(buckets.Length > 0);
+
+            foreach (var bucket1 in buckets)
+            {
+                await bucketService.DeleteAsync(new Id(bucket1.Id));
+            }
+        });
+
+        [UnityTest]
+        public IEnumerator Get() => UniTask.ToCoroutine(async delegate
+        {
+            IHttpClient httpClient = new HttpClient();
+            ISpicaServer spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
+
+            IdentityService identityService = new IdentityService(spicaServer, httpClient);
+            spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);
+
             Bucket bucket = JsonConvert.DeserializeObject<Bucket>(TestBucketDataAsJson);
             var bucketService = new BucketService(spicaServer, httpClient, Substitute.For<IWebSocketClient>());
             Bucket newBucket = await bucketService.CreateAsync(bucket);
 
             await bucketService.GetAsync(new Id(newBucket.Id));
-            
+
             Assert.Pass("Bucket fetch successfully");
 
             await bucketService.DeleteAsync(new Id(newBucket.Id));
@@ -94,7 +119,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         public IEnumerator Create() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient httpClient = new HttpClient();
-            ISpicaServer spicaServer = new SpicaServer(url, httpClient);
+            ISpicaServer spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
 
             IdentityService identityService = new IdentityService(spicaServer, httpClient);
             spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);
@@ -104,7 +129,7 @@ namespace SpicaSDK.Tests.Editor.Integration
             Bucket newBucket = await bucketService.CreateAsync(bucket);
 
             Assert.IsNotNull(newBucket);
-            
+
             await bucketService.DeleteAsync(new Id(newBucket.Id));
         });
 
@@ -112,7 +137,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         public IEnumerator Delete() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient httpClient = new HttpClient();
-            ISpicaServer spicaServer = new SpicaServer(url, httpClient);
+            ISpicaServer spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
 
             IdentityService identityService = new IdentityService(spicaServer, httpClient);
             spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);

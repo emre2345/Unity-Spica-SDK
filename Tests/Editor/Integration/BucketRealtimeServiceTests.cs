@@ -31,7 +31,7 @@ namespace SpicaSDK.Tests.Editor.Integration
             public void Setup()
             {
                 httpClient = new HttpClient();
-                spicaServer = new SpicaServer(url, httpClient);
+                spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
                 webSocketClient = new WebSocketClient();
                 bucketService = new BucketService(spicaServer, httpClient, webSocketClient);
             }
