@@ -18,7 +18,7 @@ namespace SpicaSDK.Tests.Editor.Integration
             async UniTask<(ISpicaServer spicaServer, IHttpClient httpClient)> Setup()
             {
                 IHttpClient httpClient = new HttpClient();
-                ISpicaServer spicaServer = new SpicaServer(url, httpClient);
+                ISpicaServer spicaServer = new SpicaServer(new SpicaServerUrl(url), httpClient);
 
                 IdentityService identityService = new IdentityService(spicaServer, httpClient);
                 spicaServer.Identity = await identityService.LogInAsync("spica", "spica", float.MaxValue);

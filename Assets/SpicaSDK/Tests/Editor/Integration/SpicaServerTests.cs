@@ -17,7 +17,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         public IEnumerator Connects() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient client = new HttpClient();
-            ISpicaServer server = new SpicaServer(url, client);
+            ISpicaServer server = new SpicaServer(new SpicaServerUrl(url), client);
             await server.InitializeAsync();
 
             Assert.IsTrue(server.IsAvailable);
@@ -27,7 +27,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         public IEnumerator CantConnects() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient client = new HttpClient();
-            ISpicaServer server = new SpicaServer("falseUrl", client);
+            ISpicaServer server = new SpicaServer(new SpicaServerUrl("falseUrl"), client);
 
             try
             {

@@ -24,7 +24,7 @@ namespace SpicaSDK.Tests.Editor.Integration
         public IEnumerator LogsIn() => UniTask.ToCoroutine(async delegate
         {
             IHttpClient client = new HttpClient();
-            ISpicaServer server = new SpicaServer(url, client);
+            ISpicaServer server = new SpicaServer(new SpicaServerUrl(url) , client);
 
             IdentityService identityService = new IdentityService(server, client);
             Identity identity = await identityService.LogInAsync(this.identity, password, lifespan);
