@@ -2,8 +2,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization
 {
     /// <summary>
     /// Overlay for the <see cref="Dictionary{TKey, TValue}"/> to allow serialization of the key/value pairs.

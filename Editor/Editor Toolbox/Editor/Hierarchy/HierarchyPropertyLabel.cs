@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Hierarchy
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Hierarchy
 {
     //TODO: refactor
 

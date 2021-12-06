@@ -1,9 +1,8 @@
 ﻿using System;
-
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     /// <summary>
     /// Fixed version of the <see cref="EditorGUI.DisabledScope"/>.

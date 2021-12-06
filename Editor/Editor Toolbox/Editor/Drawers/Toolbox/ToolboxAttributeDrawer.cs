@@ -1,4 +1,4 @@
-﻿namespace Toolbox.Editor.Drawers
+﻿namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox
 {
     /// <summary>
     /// Base class for all drawers based on custom attributes. 

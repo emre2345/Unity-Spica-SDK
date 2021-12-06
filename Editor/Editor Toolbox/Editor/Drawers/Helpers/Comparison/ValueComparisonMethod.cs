@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Comparison
 {
     public enum ValueComparisonMethod
     {

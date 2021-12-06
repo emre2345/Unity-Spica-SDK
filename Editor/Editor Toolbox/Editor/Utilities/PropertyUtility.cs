@@ -3,13 +3,12 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
 using UnityEditor;
 using Object = UnityEngine.Object;
 
 [assembly: InternalsVisibleTo("Toolbox.Editor.Tests")]
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities
 {
     public static partial class PropertyUtility
     {

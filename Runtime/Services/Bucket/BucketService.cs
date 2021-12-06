@@ -129,7 +129,7 @@ namespace SpicaSDK.Services
                     new Dictionary<string, string>(0)));
 
                 if (ResponseValidator.Validate(response))
-                    return document;
+                    return JsonConvert.DeserializeObject<T>(response.Text);
 
                 throw new SpicaServerException();
             }

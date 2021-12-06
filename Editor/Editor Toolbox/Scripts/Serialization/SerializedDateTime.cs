@@ -1,6 +1,7 @@
 using System;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization
 {
     /// <summary>
     /// Reference to a class <see cref="System.DateTime"/> with support for Unity serialization.

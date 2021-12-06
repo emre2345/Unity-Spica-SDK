@@ -1,12 +1,13 @@
 ﻿using System;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertyListAttributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
-    using Toolbox.Editor.Internal;
-
     /// <summary>
     /// Contains useful and ready-to-use Editor controls.
     /// </summary>
@@ -429,7 +430,7 @@ namespace Toolbox.Editor
         }
 
         /// <summary>
-        /// Draws property using additional <see cref="PropertyDrawer"/>s and <see cref="Drawers.ToolboxAttributeDrawer"/>s.
+        /// Draws property using additional <see cref="PropertyDrawer"/>s and <see cref="ToolboxAttributeDrawer"/>s.
         /// Uses built-in layouting system.
         /// </summary>
         public static void DrawToolboxProperty(SerializedProperty property)
@@ -438,7 +439,7 @@ namespace Toolbox.Editor
         }
 
         /// <summary>
-        /// Draws property using additional <see cref="PropertyDrawer"/>s and <see cref="Drawers.ToolboxAttributeDrawer"/>s.
+        /// Draws property using additional <see cref="PropertyDrawer"/>s and <see cref="ToolboxAttributeDrawer"/>s.
         /// Uses built-in layouting system.
         /// </summary>
         public static void DrawToolboxProperty(SerializedProperty property, GUIContent label)

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Folders;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Hierarchy;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertyListAttributes;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
-    using Toolbox.Editor.Drawers;
-    using Toolbox.Editor.Hierarchy;
-    using Toolbox.Editor.Folders;
-
     internal interface IToolboxGeneralSettings
     { }
 

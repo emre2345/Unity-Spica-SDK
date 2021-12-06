@@ -1,8 +1,7 @@
 ﻿using System;
-
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers
 {
     public class ControlDataStorage<T> : DrawerDataStorage<int, Vector2, Vector2>
     {

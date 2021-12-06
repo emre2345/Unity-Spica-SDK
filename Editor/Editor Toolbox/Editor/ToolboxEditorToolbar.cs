@@ -3,20 +3,20 @@
 using System;
 using System.Collections;
 using System.Reflection;
-
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Unity.EditorCoroutines.Editor;
-#if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
+#if UNITY_2019_1_OR_NEWER
+
 #else
 using UnityEngine.Experimental.UIElements;
 #endif
 
 //NOTE: since everything in this class is reflection-based it is a little bit "hacky"
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
     /// <summary>
     /// Toolbar extension which provides new funtionalites into classic Unity's scene toolbar.

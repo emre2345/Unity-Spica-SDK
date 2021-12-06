@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-#if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
+#if UNITY_EDITOR
 #endif
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization
 {
     [Serializable]
     public class SerializedScene : ISerializationCallbackReceiver

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
-
 using UnityEditor;
 using Object = UnityEngine.Object;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities
 {
     internal static class ReflectionUtility
     {

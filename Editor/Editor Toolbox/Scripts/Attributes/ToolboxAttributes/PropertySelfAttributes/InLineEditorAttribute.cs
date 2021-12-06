@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertySelfAttributes
 {
     /// <summary>
     /// Draws an associated built-in Editor.
     /// 
-    /// <para>Supported types: any <see cref="Object"/>.</para>
+    /// <para>Supported types: any <see cref="UnityEngine.Object"/>.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class InLineEditorAttribute : ToolboxSelfPropertyAttribute

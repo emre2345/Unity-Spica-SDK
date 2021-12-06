@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes
 {
     /// <summary>
     /// Begins vertical group of properties. Has to be closed by the <see cref="EndGroupAttribute"/>.

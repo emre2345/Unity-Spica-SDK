@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Extensions;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization;
+using UnityEngine;
 
-using Toolbox;
-
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Allows to pick proper type using popup control.

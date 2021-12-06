@@ -1,8 +1,9 @@
 ﻿using System;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 using UnityEditor;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
     using Editor = UnityEditor.Editor;
     using Object = UnityEngine.Object;
@@ -39,7 +40,7 @@ namespace Toolbox.Editor
 
 
         /// <summary>
-        /// Handles property display process using custom <see cref="Drawers.ToolboxDrawer"/>.
+        /// Handles property display process using custom <see cref="ToolboxDrawer"/>.
         /// </summary>
         /// <param name="property">Property to display.</param>
         public virtual void DrawCustomProperty(SerializedProperty property)
@@ -48,7 +49,7 @@ namespace Toolbox.Editor
         }
 
         /// <summary>
-        /// Draws each available property using internal <see cref="Drawers.ToolboxDrawer"/>s.
+        /// Draws each available property using internal <see cref="ToolboxDrawer"/>s.
         /// </summary>
         public virtual void DrawCustomInspector()
         {

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Text;
-
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
     internal static class ToolboxEditorLog
     {

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Extraction
 {
     public class MethodValueExtractor : IValueExtractor
     {

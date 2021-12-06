@@ -1,9 +1,10 @@
 ﻿using System;
-#if UNITY_EDITOR
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes;
 using UnityEditor;
+#if UNITY_EDITOR
 #endif
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ArchetypeAttributes
 {
     /// <summary>
     /// Standardized header, it's composition of the <see cref="LabelAttribute"/> and the <see cref="LineAttribute"/>.

@@ -1,10 +1,9 @@
-﻿using UnityEditor;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Folders;
+using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Internal
 {
-    using Toolbox.Editor.Folders;
-
     [CustomPropertyDrawer(typeof(FolderData))]
     internal class FolderDataDrawer : PropertyDrawer
     {

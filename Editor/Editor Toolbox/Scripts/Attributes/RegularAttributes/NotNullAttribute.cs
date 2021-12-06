@@ -1,11 +1,12 @@
 ﻿using System;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Draws a information box if the associated value is null.
     /// 
-    /// <para>Supported types: any <see cref="Object"/>.</para>
+    /// <para>Supported types: any <see cref="UnityEngine.Object"/>.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class NotNullAttribute : PropertyAttribute

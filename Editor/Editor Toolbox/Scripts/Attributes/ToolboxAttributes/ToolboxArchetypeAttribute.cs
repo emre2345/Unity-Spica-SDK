@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes
 {
     /// <summary>
     /// Base class for all attributes responsible for the creation of dedicated composition of <see cref="ToolboxAttribute"/>s.

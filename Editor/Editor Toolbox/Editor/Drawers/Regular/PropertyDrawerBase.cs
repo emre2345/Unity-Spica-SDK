@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Regular
 {
     /// <summary>
     /// Base class for Toolbox drawers based on the native <see cref="PropertyDrawer"/> implementation. 

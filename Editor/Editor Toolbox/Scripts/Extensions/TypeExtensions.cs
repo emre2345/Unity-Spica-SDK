@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Toolbox
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Extensions
 {
     public static class TypeExtensions
     {

@@ -1,9 +1,10 @@
 using System;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Extraction;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertySelfAttributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers
 {
     public class DynamicMinMaxSliderAttributeDrawer : ToolboxSelfPropertyDrawer<DynamicMinMaxSliderAttribute>
     {
