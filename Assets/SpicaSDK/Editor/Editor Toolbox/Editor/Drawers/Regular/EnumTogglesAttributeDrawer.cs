@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Regular
 {
     [CustomPropertyDrawer(typeof(EnumTogglesAttribute))]
     public class EnumTogglesAttributeDrawer : PropertyDrawerBase

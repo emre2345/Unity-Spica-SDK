@@ -1,14 +1,12 @@
-﻿using UnityEditor;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEngine;
 using UnityEngine.Events;
+using static SpicaSDK.Editor.Editor_Toolbox.Editor.ToolboxEditorGui;
 
-using static Toolbox.Editor.ToolboxEditorGui;
-
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
-    using Toolbox.Editor.Internal;
-
     [CustomEditor(typeof(ToolboxEditorSettings), true, isFallback = false)]
     [CanEditMultipleObjects]
     internal class ToolboxEditorSettingsEditor : ToolboxEditor

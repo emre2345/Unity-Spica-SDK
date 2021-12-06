@@ -1,4 +1,4 @@
-﻿namespace Toolbox.Editor.Drawers
+﻿namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Extraction
 {
     internal interface IValueExtractor
     {

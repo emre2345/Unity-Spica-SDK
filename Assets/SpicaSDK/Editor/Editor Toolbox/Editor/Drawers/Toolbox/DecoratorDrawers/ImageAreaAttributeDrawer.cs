@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using Unity.EditorCoroutines.Editor;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers
 {
     public class ImageAreaAttributeDrawer : ToolboxDecoratorDrawer<ImageAreaAttribute>
     {

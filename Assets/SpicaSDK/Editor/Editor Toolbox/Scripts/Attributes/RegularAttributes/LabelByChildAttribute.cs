@@ -1,6 +1,7 @@
 ﻿using System;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Changes label by the current value of targeted child.

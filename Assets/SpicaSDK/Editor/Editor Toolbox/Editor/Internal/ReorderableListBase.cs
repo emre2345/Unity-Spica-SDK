@@ -1,9 +1,9 @@
 ﻿using System;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     /// <summary>
     /// Base abstract class for all reorderable list related implementations.

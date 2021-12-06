@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Extraction;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Regular
 {
     [CustomPropertyDrawer(typeof(PresetAttribute))]
     public class PresetAttributeDrawer : PropertyDrawerBase

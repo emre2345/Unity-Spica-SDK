@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public abstract class ToolboxDecoratorAttribute : ToolboxAttribute

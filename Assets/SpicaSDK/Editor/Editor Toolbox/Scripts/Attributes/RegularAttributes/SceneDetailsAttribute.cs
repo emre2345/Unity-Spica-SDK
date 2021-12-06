@@ -1,6 +1,8 @@
 ﻿using System;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Indicates if <see cref="SerializedScene"/> drawer should show additional metadata about the picked Scene.

@@ -1,0 +1,10 @@
+using System;
+using SpicaSDK.Services.Orm;
+
+namespace SpicaSDK.Orm
+{
+    public class {{ORM_CLASS_NAME}} : BucketConnector<{{ORM_DATA_CLASS_NAME}}>
+    {
+        protected override string BucketId => {{BUCKET_ID}};
+    }
+}

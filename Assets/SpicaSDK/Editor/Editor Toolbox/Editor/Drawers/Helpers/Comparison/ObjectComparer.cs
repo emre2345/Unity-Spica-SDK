@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Object = UnityEngine.Object;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Comparison
 {
     internal class ObjectComparer : ValueComparerBase
     {

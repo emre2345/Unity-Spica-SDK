@@ -1,4 +1,6 @@
-﻿namespace Toolbox.Editor.Drawers
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Extraction
 {
     public class PropertyValueExtractor : IValueExtractor
     {

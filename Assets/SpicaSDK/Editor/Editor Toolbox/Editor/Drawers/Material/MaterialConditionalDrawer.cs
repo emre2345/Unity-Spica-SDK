@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Material
 {
     public abstract class MaterialConditionalDrawer : BaseMaterialPropertyDrawer
     {
@@ -56,10 +56,10 @@ namespace Toolbox.Editor.Drawers
         protected virtual bool? GetValue(MaterialProperty prop)
         {
             var targets = prop.targets;
-            var result = GetValue((Material)targets[0]);
+            var result = GetValue((UnityEngine.Material)targets[0]);
             for (var i = 1; i < targets.Length; i++)
             {
-                var nextResult = GetValue((Material)targets[i]);
+                var nextResult = GetValue((UnityEngine.Material)targets[i]);
                 if (nextResult != result)
                 {
                     return null;
@@ -69,7 +69,7 @@ namespace Toolbox.Editor.Drawers
             return result == 1.0f;
         }
 
-        protected virtual float GetValue(Material target)
+        protected virtual float GetValue(UnityEngine.Material target)
         {
             return target.GetFloat(togglePropertyName);
         }

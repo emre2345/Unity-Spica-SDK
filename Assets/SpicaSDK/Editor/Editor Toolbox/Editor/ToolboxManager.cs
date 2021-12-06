@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
     using Editor = UnityEditor.Editor;
 

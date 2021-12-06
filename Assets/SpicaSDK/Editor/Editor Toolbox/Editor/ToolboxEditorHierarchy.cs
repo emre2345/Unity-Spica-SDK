@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Hierarchy;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
-    using Toolbox.Editor.Hierarchy;
-
     /// <summary>
     /// Static GUI representation for the Hierarchy Overlay.
     /// </summary>

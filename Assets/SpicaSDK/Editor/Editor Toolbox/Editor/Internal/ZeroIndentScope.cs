@@ -1,8 +1,7 @@
 ﻿using System;
-
 using UnityEditor;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     internal class ZeroIndentScope : IDisposable
     {

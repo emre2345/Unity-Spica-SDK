@@ -1,8 +1,7 @@
 ﻿using System;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes;
 
-using UnityEngine;
-
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox
 {
     public abstract class ToolboxDecoratorDrawer<T> : ToolboxDecoratorDrawerBase where T : ToolboxDecoratorAttribute
     {        

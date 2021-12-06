@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes
 {
     /// <summary>
     /// Creates a HelpBox within the Inspector Window above a serialized field.

@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ConditionAttributes;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers
 {
     public class HideIfAttributeDrawer : ComparisonAttributeDrawer<HideIfAttribute>
     {

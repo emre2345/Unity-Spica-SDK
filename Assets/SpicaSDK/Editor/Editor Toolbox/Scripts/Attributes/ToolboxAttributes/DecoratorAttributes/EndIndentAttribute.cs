@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public class EndIndentAttribute : ToolboxDecoratorAttribute

@@ -2,12 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     /// <summary>
     /// Searchable popup content that allows user to filter items using a provided string value.

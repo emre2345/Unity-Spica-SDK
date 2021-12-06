@@ -1,10 +1,9 @@
-﻿using UnityEditor;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Material
 {
-    using Toolbox.Editor.Internal;
-
     public class MaterialVector3Drawer : BaseMaterialPropertyDrawer
     {
         protected override float GetPropertyHeightSafe(MaterialProperty prop, string label, MaterialEditor editor)

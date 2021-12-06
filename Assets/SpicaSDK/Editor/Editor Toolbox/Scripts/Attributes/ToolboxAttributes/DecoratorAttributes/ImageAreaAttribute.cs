@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes
 {
     /// <summary>
     /// Creates and displays texture as decorator, based on URL/URI.

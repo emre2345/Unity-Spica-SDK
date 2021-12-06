@@ -1,10 +1,10 @@
-﻿using UnityEditor;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
+using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Regular
 {
-    using Toolbox.Editor.Internal;
-
     [CustomPropertyDrawer(typeof(NotNullAttribute))]
     public class NotNullAttributeDrawer : PropertyDrawerBase
     {

@@ -1,4 +1,4 @@
-﻿namespace Toolbox.Editor.Hierarchy
+﻿namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Hierarchy
 {
     public enum HierarchyItemDataType
     {

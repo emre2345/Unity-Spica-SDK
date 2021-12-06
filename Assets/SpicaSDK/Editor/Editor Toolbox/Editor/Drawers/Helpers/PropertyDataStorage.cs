@@ -1,8 +1,8 @@
 ﻿using System;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 using UnityEditor;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers
 {
     public class PropertyDataStorage<T, T1> : DrawerDataStorage<SerializedProperty, T, T1>
     {

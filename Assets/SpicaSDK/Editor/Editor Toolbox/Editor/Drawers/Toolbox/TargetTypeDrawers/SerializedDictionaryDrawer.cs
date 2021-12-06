@@ -1,13 +1,15 @@
 ﻿#if UNITY_2020_1_OR_NEWER
-using System;
 
+using System;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.TargetTypeDrawers
 {
-    using Toolbox.Editor.Internal;
-
     public class SerializedDictionaryDrawer : ToolboxTargetTypeDrawer
     {
         static SerializedDictionaryDrawer()

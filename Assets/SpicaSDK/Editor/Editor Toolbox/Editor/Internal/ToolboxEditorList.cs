@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     /// <summary>
     /// Version of the <see cref="ReorderableList"/> dedicated for <see cref="ToolboxDrawer"/>s.

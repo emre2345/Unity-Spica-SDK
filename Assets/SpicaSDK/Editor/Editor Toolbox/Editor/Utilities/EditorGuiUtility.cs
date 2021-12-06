@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities
 {
     /// <summary>
     /// Internal overlay on the built-in <see cref="EditorGUIUtility"/> class.

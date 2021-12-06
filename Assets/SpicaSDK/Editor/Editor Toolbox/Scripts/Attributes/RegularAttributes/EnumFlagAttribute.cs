@@ -1,6 +1,7 @@
 ﻿using System;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Allows to pick multiple enum values and crates a proper result mask.

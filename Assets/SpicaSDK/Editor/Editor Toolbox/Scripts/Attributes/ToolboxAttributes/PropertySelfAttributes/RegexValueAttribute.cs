@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertySelfAttributes
 {
     /// <summary>
     /// Validates target's value using regular expression and given pattern.

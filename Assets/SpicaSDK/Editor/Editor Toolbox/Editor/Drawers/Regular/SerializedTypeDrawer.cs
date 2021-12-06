@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Serialization;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Regular
 {
-    using Toolbox.Editor.Internal;
-
     [CustomPropertyDrawer(typeof(TypeConstraintAttribute), true)]
     [CustomPropertyDrawer(typeof(SerializedType))]
     public sealed class SerializedTypeDrawer : PropertyDrawerBase

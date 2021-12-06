@@ -1,6 +1,7 @@
 ﻿using System;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Allows to pick a built-in tag value.

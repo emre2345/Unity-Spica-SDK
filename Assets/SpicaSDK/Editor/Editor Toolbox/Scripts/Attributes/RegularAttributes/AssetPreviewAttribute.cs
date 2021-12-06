@@ -1,11 +1,12 @@
 ﻿using System;
+using UnityEngine;
 
-namespace UnityEngine
+namespace SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes
 {
     /// <summary>
     /// Draws additional preview texture for the provided object.
     /// 
-    /// <para>Supported types: any <see cref="Object"/>.</para>
+    /// <para>Supported types: any <see cref="UnityEngine.Object"/>.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class AssetPreviewAttribute : PropertyAttribute

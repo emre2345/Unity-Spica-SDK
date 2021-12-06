@@ -1,10 +1,12 @@
-﻿using UnityEditor;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Internal;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertySelfAttributes;
+using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers
 {
-    using Toolbox.Editor.Internal;
-
     using Editor = UnityEditor.Editor;
 
     public class InLineEditorAttributeDrawer : ToolboxSelfPropertyDrawer<InLineEditorAttribute>

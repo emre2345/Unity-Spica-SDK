@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using AssetProcessor = UnityEditor.AssetModificationProcessor;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
     public class ToolboxAssetProcessor : AssetProcessor
     {

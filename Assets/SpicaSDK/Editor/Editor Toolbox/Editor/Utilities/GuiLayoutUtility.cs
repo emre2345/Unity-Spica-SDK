@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities
 {
     /// <summary>
     /// Toolbox-based overlay for the built-in classes <see cref="GUILayout"/> and <see cref="EditorGUILayout"/>.

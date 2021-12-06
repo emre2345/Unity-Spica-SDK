@@ -1,7 +1,9 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Comparison;
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Helpers.Extraction;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ConditionAttributes;
+using UnityEditor;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers
 {
     public abstract class ComparisonAttributeDrawer<T> : ToolboxConditionDrawer<T> where T : ComparisonAttribute
     {

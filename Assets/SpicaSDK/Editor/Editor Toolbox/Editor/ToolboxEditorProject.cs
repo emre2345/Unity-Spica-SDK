@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
+using SpicaSDK.Editor.Editor_Toolbox.Editor.Folders;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor
 {
-    using Toolbox.Editor.Folders;
-
     /// <summary>
     /// Static GUI representation for the Project Overlay.
     /// </summary>

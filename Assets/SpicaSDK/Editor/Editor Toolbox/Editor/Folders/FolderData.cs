@@ -1,9 +1,10 @@
 ﻿using System;
-
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ConditionAttributes;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Toolbox.Editor.Folders
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Folders
 {
     public enum FolderDataType
     {

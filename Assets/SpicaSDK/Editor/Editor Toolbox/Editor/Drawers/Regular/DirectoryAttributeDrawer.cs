@@ -1,9 +1,9 @@
 ﻿using System.IO;
-
+using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.RegularAttributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Drawers
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Regular
 {
     [CustomPropertyDrawer(typeof(DirectoryAttribute))]
     public class DirectoryAttributeDrawer : PropertyDrawerBase

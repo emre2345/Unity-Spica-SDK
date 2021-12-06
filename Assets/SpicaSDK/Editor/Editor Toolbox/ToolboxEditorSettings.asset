@@ -24,45 +24,81 @@ MonoBehaviour:
   customFolders: []
   useToolboxDrawers: 1
   decoratorDrawerHandlers:
-  - classReference: Toolbox.Editor.Drawers.BeginGroupAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.BeginHorizontalAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.BeginHorizontalGroupAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.BeginIndentAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.DynamicHelpAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.EditorButtonAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.EndGroupAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.EndHorizontalAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.EndHorizontalGroupAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.EndIndentAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.GuiColorAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.HelpAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.HighlightAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.ImageAreaAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.IndentAreaAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.LabelAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.LineAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.SpaceAreaAttributeDrawer, com.spicaengine.Editor
-  conditionDrawerHandlers:
-  - classReference: Toolbox.Editor.Drawers.DisableAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.DisableIfAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.DisableInPlayModeAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.EnableIfAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.HideAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.HideDisabledIfAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.HideIfAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.ShowDisabledIfAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.ShowIfAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.ShowWarningIfAttributeDrawer, com.spicaengine.Editor
-  selfPropertyDrawerHandlers:
-  - classReference: Toolbox.Editor.Drawers.DynamicMinMaxSliderAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.DynamicRangeAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.IgnoreParentAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.InLineEditorAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.RegexValueAttributeDrawer, com.spicaengine.Editor
-  listPropertyDrawerHandlers:
-  - classReference: Toolbox.Editor.Drawers.ReorderableListAttributeDrawer, com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.ReorderableListExposedAttributeDrawer,
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.BeginGroupAttributeDrawer,
       com.spicaengine.Editor
-  - classReference: Toolbox.Editor.Drawers.ScrollableItemsAttributeDrawer, com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.BeginHorizontalAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.BeginHorizontalGroupAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.BeginIndentAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.DynamicHelpAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.EditorButtonAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.EndGroupAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.EndHorizontalAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.EndHorizontalGroupAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.EndIndentAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.GuiColorAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.HelpAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.HighlightAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.ImageAreaAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.IndentAreaAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.LabelAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.LineAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.DecoratorDrawers.SpaceAreaAttributeDrawer,
+      com.spicaengine.Editor
+  conditionDrawerHandlers:
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.DisableAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.DisableIfAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.DisableInPlayModeAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.EnableIfAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.HideAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.HideDisabledIfAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.HideIfAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.ShowDisabledIfAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.ShowIfAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.ConditionDrawers.ShowWarningIfAttributeDrawer,
+      com.spicaengine.Editor
+  selfPropertyDrawerHandlers:
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers.DynamicMinMaxSliderAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers.DynamicRangeAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers.IgnoreParentAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers.InLineEditorAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertySelfDrawers.RegexValueAttributeDrawer,
+      com.spicaengine.Editor
+  listPropertyDrawerHandlers:
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertyListDrawers.ReorderableListAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertyListDrawers.ReorderableListExposedAttributeDrawer,
+      com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.PropertyListDrawers.ScrollableItemsAttributeDrawer,
+      com.spicaengine.Editor
   targetTypeDrawerHandlers:
-  - classReference: Toolbox.Editor.Drawers.SerializedDictionaryDrawer, com.spicaengine.Editor
+  - classReference: SpicaSDK.Editor.Editor_Toolbox.Editor.Drawers.Toolbox.TargetTypeDrawers.SerializedDictionaryDrawer,
+      com.spicaengine.Editor

@@ -1,8 +1,7 @@
 ﻿using System;
-
 using UnityEditor;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     /// <summary>
     /// Stores and restores <see cref="EditorGUIUtility.labelWidth"/> and <see cref="EditorGUIUtility.fieldWidth"/>.

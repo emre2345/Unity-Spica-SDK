@@ -111,6 +111,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     new TestBucketDataModel("patchedData", "patchedDesc"));
 
                 Assert.NotNull(patchedData);
+                Assert.AreEqual(patchedData.Title, "patchedData");
                 await bucketService.DeleteAsync(new Id(newBucket.Id));
                 // Assert.AreSame(insertedData.Id, patchedData.Id);
             });

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Toolbox.Editor
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Utilities
 {
     using Editor = UnityEditor.Editor;
     using Object = UnityEngine.Object;

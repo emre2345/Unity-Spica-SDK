@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-
 using UnityEditor;
 using UnityEngine;
 
-namespace Toolbox.Editor.Internal
+namespace SpicaSDK.Editor.Editor_Toolbox.Editor.Internal
 {
     /// <summary>
     /// Custom re-implementation of the <see cref="UnityEditorInternal.ReorderableList"/>.
