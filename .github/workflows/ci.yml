@@ -1,0 +1,18 @@
+name: Submodule CI
+on:
+  push:
+    branches:
+    - master
+jobs:
+  split-submodule:
+    name: split submodule branch
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: split submodule branch
+      run: |
+        git subtree split -P "Assets/SpicaSDK" -b submodule
+        git push -u origin submodule
+
