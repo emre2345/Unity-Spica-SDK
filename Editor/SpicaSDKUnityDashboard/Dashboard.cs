@@ -129,7 +129,7 @@ public class Dashboard : ScriptableObject
 
     BuiltInDataType MapDataType(string dataType)
     {
-        switch (dataType)
+         switch (dataType)
         {
             case "number":
                 return BuiltInDataType.Double;
@@ -137,6 +137,10 @@ public class Dashboard : ScriptableObject
             case "richtext":
             case "string":
                 return BuiltInDataType.String;
+            case "relation":
+                return BuiltInDataType.Object;
+            case "boolean":
+                return BuiltInDataType.Bool;
             default:
                 throw new Exception($"Could not parse dataType: {dataType}");
         }
