@@ -50,10 +50,17 @@ public class Dashboard : ScriptableObject
     async UniTask Login()
     {
         logInProgress = true;
-        Identity identity = await SpicaSDK.Services.SpicaSDK.LogIn(UserName, Password);
-        SpicaSDK.Services.SpicaSDK.SetIdentity(identity);
-        SpicaLogger.Log("Logged in successfully");
-        logInProgress = false;
+
+		try
+		{
+        	Identity identity = await SpicaSDK.Services.SpicaSDK.LogIn(UserName, Password);
+        	SpicaSDK.Services.SpicaSDK.SetIdentity(identity);
+        	SpicaLogger.Log("Logged in successfully");
+		}
+		finally
+		{
+			logInProgress = false;
+		}
     }
 
     private bool logInProgress = false;
