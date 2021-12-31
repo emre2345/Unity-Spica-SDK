@@ -145,7 +145,7 @@ public class Dashboard : ScriptableObject
             case "string":
                 return BuiltInDataType.String;
             case "relation":
-                return BuiltInDataType.Object;
+                return BuiltInDataType.String;
             case "boolean":
                 return BuiltInDataType.Bool;
             default:
