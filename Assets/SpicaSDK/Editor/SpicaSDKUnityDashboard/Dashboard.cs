@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using CsCodeGenerator;
 using CsCodeGenerator.Enums;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ArchetypeAttributes;
 using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ConditionAttributes;
 using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.DecoratorAttributes;
@@ -51,16 +52,16 @@ public class Dashboard : ScriptableObject
     {
         logInProgress = true;
 
-		try
-		{
-        	Identity identity = await SpicaSDK.Services.SpicaSDK.LogIn(UserName, Password);
-        	SpicaSDK.Services.SpicaSDK.SetIdentity(identity);
-        	SpicaLogger.Log("Logged in successfully");
-		}
-		finally
-		{
-			logInProgress = false;
-		}
+        try
+        {
+            Identity identity = await SpicaSDK.Services.SpicaSDK.LogIn(UserName, Password);
+            SpicaSDK.Services.SpicaSDK.SetIdentity(identity);
+            SpicaLogger.Log("Logged in successfully");
+        }
+        finally
+        {
+            logInProgress = false;
+        }
     }
 
     private bool logInProgress = false;
@@ -106,13 +107,15 @@ public class Dashboard : ScriptableObject
 
             foreach (var bucketProperty in bucket.Properties)
             {
-                var propertyType = bucketProperty.Value.First.ToObject<string>();
-
-                var field = new Field(MapDataType(propertyType), bucketProperty.Key);
+                var field = new Field(GetDataTypeOfProperty(buckets, bucketProperty), bucketProperty.Key);
                 field.AccessModifier = AccessModifier.Public;
 
                 publicFields.Add(field);
             }
+
+            var idField = new Field(BuiltInDataType.String, "_id");
+            idField.AccessModifier = AccessModifier.Public;
+            publicFields.Insert(0, idField);
 
             classModel.Fields = publicFields;
             FileModel fileModel = new FileModel(classModel.Name);
@@ -134,22 +137,27 @@ public class Dashboard : ScriptableObject
         AssetDatabase.Refresh();
     }
 
-    BuiltInDataType MapDataType(string dataType)
+    string GetDataTypeOfProperty(Bucket[] buckets, KeyValuePair<string, JToken> bucketProperty)
     {
-         switch (dataType)
+        var propertyType = bucketProperty.Value.First.ToObject<string>();
+
+        if (propertyType.Equals("relation"))
+        {
+            return Array.Find(buckets, b => b.Id.Equals(bucketProperty.Value.Value<string>("bucketId"))).Title + "Data";
+        }
+        
+        switch (propertyType)
         {
             case "number":
-                return BuiltInDataType.Double;
+                return BuiltInDataType.Double.ToTextLower();
             case "textarea":
             case "richtext":
             case "string":
-                return BuiltInDataType.String;
-            case "relation":
-                return BuiltInDataType.String;
+                return BuiltInDataType.String.ToTextLower();
             case "boolean":
-                return BuiltInDataType.Bool;
+                return BuiltInDataType.Bool.ToTextLower();
             default:
-                throw new Exception($"Could not parse dataType: {dataType}");
+                throw new Exception($"Could not parse dataType: {propertyType}");
         }
     }
 
