@@ -156,6 +156,8 @@ public class Dashboard : ScriptableObject
                 return BuiltInDataType.String.ToTextLower();
             case "boolean":
                 return BuiltInDataType.Bool.ToTextLower();
+			case "date"	:
+				return nameof(DateTime);
             default:
                 throw new Exception($"Could not parse dataType: {propertyType}");
         }

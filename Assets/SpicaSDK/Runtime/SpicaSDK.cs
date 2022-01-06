@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;
 using SpicaSDK.Services.Services.Identity.Models;
@@ -34,6 +35,11 @@ namespace SpicaSDK.Services
         {
             IdentityService identityService = new IdentityService(spicaServer, httpClient);
             return identityService.LogInAsync(username, password, float.MaxValue);
+        }
+
+        public static void SetApiKey(string apiKey)
+        {
+            spicaServer.Identity = new Identity(apiKey, "APIKEY", string.Empty);
         }
 
         public static UniTask<Bucket[]> GetBuckets()
