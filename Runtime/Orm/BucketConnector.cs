@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services.Models;
 
 namespace SpicaSDK.Services.Orm
@@ -41,10 +42,20 @@ namespace SpicaSDK.Services.Orm
         {
             return SpicaSDK.Get<BucketDataModelType>(new Id(BucketId), documentId, new QueryParams());
         }
+        
+        public UniTask<BucketDataModelType> Get(Id documentId, QueryParams queryParams)
+        {
+            return SpicaSDK.Get<BucketDataModelType>(new Id(BucketId), documentId, queryParams);
+        }
 
         public UniTask<BucketDataModelType[]> GetAll()
         {
             return SpicaSDK.GetAll<BucketDataModelType>(new Id(BucketId), new QueryParams());
+        }
+        
+        public UniTask<BucketDataModelType[]> GetAll(QueryParams queryParams)
+        {
+            return SpicaSDK.GetAll<BucketDataModelType>(new Id(BucketId), queryParams);
         }
     }
 }

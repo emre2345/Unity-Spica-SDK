@@ -6,6 +6,7 @@ using SpicaSDK.Interfaces;
 using SpicaSDK.Services.Exceptions;
 using SpicaSDK.Services.Models;
 using Newtonsoft.Json;
+using SpicaSDK.Runtime.Utils;
 using UnityEngine;
 
 namespace SpicaSDK.Services
@@ -88,7 +89,7 @@ namespace SpicaSDK.Services
             public async UniTask<T> GetAsync<T>(Id bucketId, Id documentId, QueryParams queryParams)
             {
                 var response = await httpClient.GetAsync(new Request(server.BucketDataDocumentUrl(bucketId, documentId),
-                    queryParams.QueryString,
+                    queryParams.GetString(),
                     new Dictionary<string, string>(0)));
 
                 if (ResponseValidator.Validate(response))
@@ -100,7 +101,7 @@ namespace SpicaSDK.Services
             public async UniTask<T[]> GetAllAsync<T>(Id bucketId, QueryParams queryParams)
             {
                 var response = await httpClient.GetAsync(new Request(server.BucketDataUrl(bucketId),
-                    queryParams.QueryString,
+                    queryParams.GetString(),
                     new Dictionary<string, string>(0)));
 
                 if (ResponseValidator.Validate(response))

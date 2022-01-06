@@ -8,6 +8,7 @@ using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.WebSocketClient;

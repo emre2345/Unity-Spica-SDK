@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.WebSocketClient;
 using UniRx;
@@ -26,10 +27,12 @@ namespace SpicaSDK.Services
             public async UniTask<DocumentChange<T>> WatchDocumentAsync<T>(Id bucketId, Id documentId) where T : class
             {
                 QueryParams queryParams = new QueryParams(1);
-                queryParams.AddQuery("filter", $"_id==\"{documentId.Value}\"");
-                queryParams.AddQuery("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
+                MongoFilter mongoFilter = new MongoFilter(1);
+                mongoFilter.Add("_id", documentId.Value);
+                queryParams.Add("filter", mongoFilter.GetString());
+                queryParams.Add("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
 
-                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.QueryString;
+                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.GetString();
                 IWebSocketConnection connection = await webSocketClient.ConnectAsync(url);
                 return new DocumentChange<T>(connection);
             }
@@ -37,8 +40,8 @@ namespace SpicaSDK.Services
             public async UniTask<BucketConnection<T>> ConnectToBucketAsync<T>(Id bucketId, QueryParams queryParams)
                 where T : class
             {
-                queryParams.AddQuery("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
-                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.QueryString;
+                queryParams.Add("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
+                string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.GetString();
                 var connection = await webSocketClient.ConnectAsync(url);
                 return new BucketConnection<T>(connection);
             }

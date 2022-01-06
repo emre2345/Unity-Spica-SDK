@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;
@@ -57,7 +58,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                 await Login();
 
                 var queryParams = new QueryParams();
-                queryParams.AddQuery("limit", "1");
+                queryParams.Add("limit", "1");
 
                 var newTitle = "updatedTitle";
 
