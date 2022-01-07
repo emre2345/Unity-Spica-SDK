@@ -75,11 +75,13 @@ public class Dashboard : ScriptableObject
     [ReorderableList(ListStyle.Round, null, false, false)]
     public SelectableBucketName[] Buckets;
 
+    private Bucket[] allBuckets;
+
     async UniTask FetchBuckets()
     {
         fetchInProgress = true;
-        var buckets = await SpicaSDK.Services.SpicaSDK.GetBuckets();
-        Buckets = buckets.Select(bucket => new SelectableBucketName()
+        allBuckets = await SpicaSDK.Services.SpicaSDK.GetBuckets();
+        Buckets = allBuckets.Select(bucket => new SelectableBucketName()
                 { bucket = bucket, Selected = false, Title = bucket.Title })
             .ToArray();
         fetchInProgress = false;
@@ -107,7 +109,7 @@ public class Dashboard : ScriptableObject
 
             foreach (var bucketProperty in bucket.Properties)
             {
-                var field = new Field(GetDataTypeOfProperty(buckets, bucketProperty), bucketProperty.Key);
+                var field = new Field(GetDataTypeOfProperty(allBuckets, bucketProperty), bucketProperty.Key);
                 field.AccessModifier = AccessModifier.Public;
 
                 publicFields.Add(field);
@@ -143,9 +145,19 @@ public class Dashboard : ScriptableObject
 
         if (propertyType.Equals("relation"))
         {
-            return Array.Find(buckets, b => b.Id.Equals(bucketProperty.Value.Value<string>("bucketId"))).Title + "Data";
+            var relationType = bucketProperty.Value.Value<string>("relationType");
+            var relationBucketId = bucketProperty.Value.Value<string>("bucketId");
+            switch (relationType)
+            {
+                case "onetoone":
+                    return Array.Find(buckets, b => b.Id.Equals(relationBucketId)).Title +
+                           "Data";
+                case "onetomany":
+                    return Array.Find(buckets, b => b.Id.Equals(relationBucketId)).Title +
+                           "Data[]";
+            }
         }
-        
+
         switch (propertyType)
         {
             case "number":
@@ -156,8 +168,8 @@ public class Dashboard : ScriptableObject
                 return BuiltInDataType.String.ToTextLower();
             case "boolean":
                 return BuiltInDataType.Bool.ToTextLower();
-			case "date"	:
-				return nameof(DateTime);
+            case "date":
+                return nameof(DateTime);
             default:
                 throw new Exception($"Could not parse dataType: {propertyType}");
         }
