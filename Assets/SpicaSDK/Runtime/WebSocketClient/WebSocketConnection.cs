@@ -34,7 +34,9 @@ namespace SpicaSDK.Services.WebSocketClient
 
             observeError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
 
+#if !UNITY_WEBGL || UNITY_EDITOR
             update = Observable.EveryUpdate().Subscribe(l => this.socket.DispatchMessageQueue());
+#endif
         }
 
         void CreateObservables()
