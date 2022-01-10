@@ -11,6 +11,8 @@ namespace SpicaSDK.Interfaces
 
     public interface IWebSocketConnection : IObservable<ServerMessage>
     {
+        UniTask Connected();
+        
         UniTask DisconnectAsync();
 
         UniTask SendMessageAsync(string message);

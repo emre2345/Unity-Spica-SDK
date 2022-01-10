@@ -19,6 +19,7 @@ namespace SpicaSDK.Services.WebSocketClient
         private IObservable<Unit> observeOpen;
         private IObservable<string> observeError;
         private IObservable<string> observeMessage;
+        private IObservable<WebSocketCloseCode> observeClose;
         private IObservable<WebSocketState> observeState;
 
         public WebSocketConnection(WebSocket socket)
@@ -33,6 +34,9 @@ namespace SpicaSDK.Services.WebSocketClient
                 .Subscribe(unit => Debug.Log($"[ {nameof(WebSocketClient)} ] Connection established"));
 
             observeError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
+
+            observeClose.Subscribe(code =>
+                Debug.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}"));
 
 #if !UNITY_WEBGL || UNITY_EDITOR
             update = Observable.EveryUpdate().Subscribe(l => this.socket.DispatchMessageQueue());
@@ -55,6 +59,10 @@ namespace SpicaSDK.Services.WebSocketClient
                     handler => socket.OnMessage += handler, handler => socket.OnMessage -= handler).Do(s =>
                     Debug.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}")).Share();
 
+            observeClose = Observable.FromEvent<WebSocketCloseEventHandler, WebSocketCloseCode>(action => action.Invoke,
+                action => socket.OnClose += action,
+                action => socket.OnClose -= action);
+
             observeState = socket.ObserveEveryValueChanged(webSocket => webSocket.State).Share();
         }
 
@@ -62,6 +70,11 @@ namespace SpicaSDK.Services.WebSocketClient
         {
             return observeMessage
                 .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s)).Subscribe(observer).AddTo(subscriptions);
+        }
+
+        public UniTask Connected()
+        {
+            return UniTask.WaitUntil(() => socket.State == WebSocketState.Open);
         }
 
         public async UniTask DisconnectAsync()

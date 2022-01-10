@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace SpicaSDK
@@ -109,6 +110,10 @@ namespace SpicaSDK
             SetHeaders(req, defaultHeaders);
 
             var operation = await req.SendWebRequest();
+
+            Debug.Log(
+                $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {operation.responseCode}\nResponse:\n{operation.downloadHandler.text}");
+
             return new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
         }
     }
