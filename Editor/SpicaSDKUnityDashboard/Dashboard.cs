@@ -170,6 +170,8 @@ public class Dashboard : ScriptableObject
                 return BuiltInDataType.Bool.ToTextLower();
             case "date":
                 return nameof(DateTime);
+            case "location":
+                return nameof(Point);
             default:
                 throw new Exception($"Could not parse dataType: {propertyType}");
         }

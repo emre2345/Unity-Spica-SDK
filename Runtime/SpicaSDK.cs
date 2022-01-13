@@ -88,5 +88,11 @@ namespace SpicaSDK.Services
         {
             return bucketService.Data.GetAllAsync<T>(bucketId, queryParams);
         }
+
+        public static UniTask<Response> Post(string functionName, string payload)
+        {
+            return httpClient.PostAsync(
+                new Request($"{SpicaServerConfiguration.Instance.RootUrl}/api/fn-execute/{functionName}", payload));
+        }
     }
 }

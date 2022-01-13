@@ -21,11 +21,11 @@ namespace SpicaSDK.Tests.Editor.Unit
         [Test]
         public void MongoFilterBuilt()
         {
-            MongoFilter mongoFilter = new MongoFilter(2);
-            mongoFilter.Add("v1", "v1");
-            mongoFilter.Add("v2", "v2");
+            MongoAggregation mongoAggregation = new MongoAggregation(2);
+            mongoAggregation.Add("v1", "v1");
+            mongoAggregation.Add("v2", "v2");
             
-            Assert.AreEqual("{\"v1\":\"v1\",\"v2\":\"v2\"}", mongoFilter.GetString());
+            Assert.AreEqual("{\"v1\":\"v1\",\"v2\":\"v2\"}", mongoAggregation.GetString());
         }
     }
 }

@@ -5,13 +5,13 @@ namespace SpicaSDK.Runtime.Utils
     public abstract class KeyValueStringBuilder
     {
         protected List<SingleParam> value;
-        
+
         protected class SingleParam
         {
             public readonly string Key;
-            public readonly string Value;
+            public readonly object Value;
 
-            public SingleParam(string key, string value)
+            public SingleParam(string key, object value)
             {
                 Key = key;
                 Value = value;
@@ -27,7 +27,7 @@ namespace SpicaSDK.Runtime.Utils
             value = new List<SingleParam>(count);
         }
 
-        public void Add(string key, string value) => this.value.Add(new SingleParam(key, value));
+        public void Add(string key, object value) => this.value.Add(new SingleParam(key, value));
 
         public abstract string GetString();
     }
