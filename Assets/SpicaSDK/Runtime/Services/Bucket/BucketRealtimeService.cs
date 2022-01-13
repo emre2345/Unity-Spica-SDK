@@ -26,11 +26,11 @@ namespace SpicaSDK.Services
 
             public async UniTask<DocumentChange<T>> WatchDocumentAsync<T>(Id bucketId, Id documentId) where T : class
             {
-                MongoFilter mongoFilter = new MongoFilter(1);
-                mongoFilter.Add("_id", documentId.Value);
+                MongoAggregation mongoAggregation = new MongoAggregation(1);
+                mongoAggregation.Add("_id", documentId.Value);
 
                 QueryParams queryParams = new QueryParams(1);
-                queryParams.Add("filter", mongoFilter.GetString());
+                queryParams.Add("filter", mongoAggregation.GetString());
                 queryParams.Add("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
 
                 string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.GetString();

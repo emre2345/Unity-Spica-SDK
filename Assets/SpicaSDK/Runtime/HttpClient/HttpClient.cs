@@ -88,6 +88,7 @@ namespace SpicaSDK
                 if (!string.IsNullOrEmpty(request.Payload))
                     url += $"?{request.Payload}";
 
+                Debug.Log($"[{nameof(HttpClient)}] Get request: {url}");
                 var req = UnityWebRequest.Get(url);
                 SetHeaders(req, request.Headers);
                 return req;
@@ -96,8 +97,10 @@ namespace SpicaSDK
 
         private void SetHeaders(UnityWebRequest request, Dictionary<string, string> headers)
         {
+            // Debug.Log($"[{nameof(HttpClient)}] adding headers to: {request.url}");
             foreach (var requestHeader in headers)
             {
+                // Debug.Log($"[{nameof(HttpClient)}] Header: {requestHeader.Key} - {requestHeader.Value}");
                 request.SetRequestHeader(requestHeader.Key, requestHeader.Value);
             }
         }

@@ -7,7 +7,7 @@ namespace SpicaSDK.Editor.OrmTemplate
     public static class OrmTemplate
     {
         private static string Template =>
-            File.ReadAllText($"{Application.dataPath}/SpicaSDK/Editor/OrmTemplate/OrmClassTemplate.txt");
+            File.ReadAllText($"{Application.dataPath}/Plugins/SpicaSDK/Editor/OrmTemplate/OrmClassTemplate.txt");
 
         private const string ClassName = "{{ORM_CLASS_NAME}}";
         private const string DataClassName = "{{ORM_DATA_CLASS_NAME}}";
