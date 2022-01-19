@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Services.Exceptions;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;
 using SpicaSDK.Services.Services.Identity.Models;
@@ -42,57 +44,76 @@ namespace SpicaSDK.Services
             spicaServer.Identity = new Identity(apiKey, "APIKEY", string.Empty);
         }
 
-        public static UniTask<Bucket[]> GetBuckets()
+        public static class Bucket
         {
-            return bucketService.GetAllAsync();
+            public static UniTask<Models.Bucket[]> Get()
+            {
+                return bucketService.GetAllAsync();
+            }
+
+            public static class Realtime
+            {
+                public static UniTask<BucketConnection<T>> Connect<T>(Id bucketId, QueryParams queryParams)
+                    where T : class
+                {
+                    return bucketService.Realtime.ConnectToBucketAsync<T>(bucketId, queryParams);
+                }
+
+                public static UniTask<DocumentChange<T>> WatchDocument<T>(Id bucketId, Id documentId)
+                    where T : class
+                {
+                    return bucketService.Realtime.WatchDocumentAsync<T>(bucketId, documentId);
+                }
+            }
+
+            public static class Data
+            {
+                public static UniTask<T> Insert<T>(Id bucketId, T document)
+                {
+                    return bucketService.Data.InsertAsync(bucketId, document);
+                }
+
+                public static UniTask<bool> Delete<T>(Id bucketId, Id documentId)
+                {
+                    return bucketService.Data.RemoveAsync(bucketId, documentId);
+                }
+
+                public static UniTask<T> Replace<T>(Id bucketId, Id documentId, T document)
+                {
+                    return bucketService.Data.ReplaceAsync(bucketId, documentId, document);
+                }
+
+                public static UniTask<T> Patch<T>(Id bucketId, Id documentId, T document)
+                {
+                    return bucketService.Data.PatchAsync(bucketId, documentId, document);
+                }
+
+                public static UniTask<T> Get<T>(Id bucketId, Id documentId, QueryParams queryParams)
+                {
+                    return bucketService.Data.GetAsync<T>(bucketId, documentId, queryParams);
+                }
+
+                public static UniTask<T[]> GetAll<T>(Id bucketId, QueryParams queryParams)
+                {
+                    return bucketService.Data.GetAllAsync<T>(bucketId, queryParams);
+                }
+            }
         }
 
-        public static UniTask<BucketConnection<T>> ConnectToBucket<T>(Id bucketId, QueryParams queryParams)
-            where T : class
+        public static class Http
         {
-            return bucketService.Realtime.ConnectToBucketAsync<T>(bucketId, queryParams);
-        }
+            public static UniTask<Response> Post(string functionName, string payload)
+            {
+                return httpClient.PostAsync(
+                    new Request($"{SpicaServerConfiguration.Instance.RootUrl}/api/fn-execute/{functionName}", payload));
+            }
 
-        public static UniTask<DocumentChange<T>> WatchDocument<T>(Id bucketId, Id documentId)
-            where T : class
-        {
-            return bucketService.Realtime.WatchDocumentAsync<T>(bucketId, documentId);
-        }
-
-        public static UniTask<T> InsertAsync<T>(Id bucketId, T document)
-        {
-            return bucketService.Data.InsertAsync(bucketId, document);
-        }
-
-        public static UniTask<bool> DeleteAsync<T>(Id bucketId, Id documentId)
-        {
-            return bucketService.Data.RemoveAsync(bucketId, documentId);
-        }
-
-        public static UniTask<T> Replace<T>(Id bucketId, Id documentId, T document)
-        {
-            return bucketService.Data.ReplaceAsync(bucketId, documentId, document);
-        }
-
-        public static UniTask<T> Patch<T>(Id bucketId, Id documentId, T document)
-        {
-            return bucketService.Data.PatchAsync(bucketId, documentId, document);
-        }
-
-        public static UniTask<T> Get<T>(Id bucketId, Id documentId, QueryParams queryParams)
-        {
-            return bucketService.Data.GetAsync<T>(bucketId, documentId, queryParams);
-        }
-
-        public static UniTask<T[]> GetAll<T>(Id bucketId, QueryParams queryParams)
-        {
-            return bucketService.Data.GetAllAsync<T>(bucketId, queryParams);
-        }
-
-        public static UniTask<Response> Post(string functionName, string payload)
-        {
-            return httpClient.PostAsync(
-                new Request($"{SpicaServerConfiguration.Instance.RootUrl}/api/fn-execute/{functionName}", payload));
+            public static UniTask<Response> Get(string functionName, QueryParams queryParams)
+            {
+                return httpClient.GetAsync(
+                    new Request($"{SpicaServerConfiguration.Instance.RootUrl}/api/fn-execute/{functionName}",
+                        queryParams.GetString()));
+            }
         }
     }
 }
