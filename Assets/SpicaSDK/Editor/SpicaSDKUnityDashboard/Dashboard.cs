@@ -80,7 +80,7 @@ public class Dashboard : ScriptableObject
     async UniTask FetchBuckets()
     {
         fetchInProgress = true;
-        allBuckets = await SpicaSDK.Services.SpicaSDK.GetBuckets();
+        allBuckets = await SpicaSDK.Services.SpicaSDK.Bucket.Get();
         Buckets = allBuckets.Select(bucket => new SelectableBucketName()
                 { bucket = bucket, Selected = false, Title = bucket.Title })
             .ToArray();

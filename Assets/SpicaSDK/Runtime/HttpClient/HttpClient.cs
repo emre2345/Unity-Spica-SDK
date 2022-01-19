@@ -37,6 +37,7 @@ namespace SpicaSDK
                 req.uploadHandler = uploadHandler;
                 req.downloadHandler = new DownloadHandlerBuffer();
                 SetHeaders(req, request.Headers);
+                req.SetRequestHeader("Content-Type", "application/json");
                 return req;
             });
         }
@@ -51,6 +52,7 @@ namespace SpicaSDK
                 req.uploadHandler = uploadHandler;
                 req.downloadHandler = new DownloadHandlerBuffer();
                 SetHeaders(req, request.Headers);
+                req.SetRequestHeader("Content-Type", "application/json");
                 return req;
             });
         }
@@ -76,6 +78,7 @@ namespace SpicaSDK
                 req.uploadHandler = uploadHandler;
                 req.downloadHandler = new DownloadHandlerBuffer();
                 SetHeaders(req, request.Headers);
+                req.SetRequestHeader("Content-Type", "application/json");
                 return req;
             });
         }
@@ -108,16 +111,22 @@ namespace SpicaSDK
         private async UniTask<Response> CreateAndSendRequest(Func<UnityWebRequest> factory)
         {
             var req = factory();
-            req.SetRequestHeader("Content-Type", "application/json");
 
             SetHeaders(req, defaultHeaders);
 
-            var operation = await req.SendWebRequest();
+            try
+            {
+                var operation = await req.SendWebRequest();
 
-            Debug.Log(
-                $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {operation.responseCode}\nResponse:\n{operation.downloadHandler.text}");
+                Debug.Log(
+                    $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {operation.responseCode}\nResponse:\n{operation.downloadHandler.text}");
 
-            return new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
+                return new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
+            }
+            catch (UnityWebRequestException e)
+            {
+                return new Response((HttpStatusCode)e.ResponseCode, string.Empty);
+            }
         }
     }
 }

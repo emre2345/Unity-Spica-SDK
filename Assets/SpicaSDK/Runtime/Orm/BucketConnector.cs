@@ -8,59 +8,59 @@ namespace SpicaSDK.Services.Orm
     {
         protected abstract string BucketId { get; }
 
-        public UniTask<BucketConnection<BucketDataModelType>> ConnectAsync()
+        public UniTask<BucketConnection<BucketDataModelType>> Connect()
         {
-            return ConnectAsync(new QueryParams());
+            return Connect(new QueryParams());
         }
 
-        public UniTask<BucketConnection<BucketDataModelType>> ConnectAsync(QueryParams queryParams)
+        public UniTask<BucketConnection<BucketDataModelType>> Connect(QueryParams queryParams)
         {
-            return SpicaSDK.ConnectToBucket<BucketDataModelType>(new Id(BucketId), queryParams);
+            return SpicaSDK.Bucket.Realtime.Connect<BucketDataModelType>(new Id(BucketId), queryParams);
         }
 
         public UniTask<DocumentChange<BucketDataModelType>> WatchDocument(Id documentId)
         {
-            return SpicaSDK.WatchDocument<BucketDataModelType>(new Id(BucketId), documentId);
+            return SpicaSDK.Bucket.Realtime.WatchDocument<BucketDataModelType>(new Id(BucketId), documentId);
         }
 
         public UniTask<BucketDataModelType> Insert(BucketDataModelType document)
         {
-            return SpicaSDK.InsertAsync(new Id(BucketId), document);
+            return SpicaSDK.Bucket.Data.Insert(new Id(BucketId), document);
         }
 
         public UniTask<bool> Delete(Id documentId)
         {
-            return SpicaSDK.DeleteAsync<BucketDataModelType>(new Id(BucketId), documentId);
+            return SpicaSDK.Bucket.Data.Delete<BucketDataModelType>(new Id(BucketId), documentId);
         }
 
         public UniTask<BucketDataModelType> Replace(Id documentId, BucketDataModelType document)
         {
-            return SpicaSDK.Replace(new Id(BucketId), documentId, document);
+            return SpicaSDK.Bucket.Data.Replace(new Id(BucketId), documentId, document);
         }
 
         public UniTask<BucketDataModelType> Patch(Id documentId, BucketDataModelType document)
         {
-            return SpicaSDK.Patch(new Id(BucketId), documentId, document);
+            return SpicaSDK.Bucket.Data.Patch(new Id(BucketId), documentId, document);
         }
 
         public UniTask<BucketDataModelType> Get(Id documentId)
         {
-            return SpicaSDK.Get<BucketDataModelType>(new Id(BucketId), documentId, new QueryParams());
+            return SpicaSDK.Bucket.Data.Get<BucketDataModelType>(new Id(BucketId), documentId, new QueryParams());
         }
 
         public UniTask<BucketDataModelType> Get(Id documentId, QueryParams queryParams)
         {
-            return SpicaSDK.Get<BucketDataModelType>(new Id(BucketId), documentId, queryParams);
+            return SpicaSDK.Bucket.Data.Get<BucketDataModelType>(new Id(BucketId), documentId, queryParams);
         }
 
         public UniTask<BucketDataModelType[]> GetAll()
         {
-            return SpicaSDK.GetAll<BucketDataModelType>(new Id(BucketId), new QueryParams());
+            return SpicaSDK.Bucket.Data.GetAll<BucketDataModelType>(new Id(BucketId), new QueryParams());
         }
 
         public UniTask<BucketDataModelType[]> GetAll(QueryParams queryParams)
         {
-            return SpicaSDK.GetAll<BucketDataModelType>(new Id(BucketId), queryParams);
+            return SpicaSDK.Bucket.Data.GetAll<BucketDataModelType>(new Id(BucketId), queryParams);
         }
     }
 }
