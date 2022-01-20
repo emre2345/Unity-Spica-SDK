@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
@@ -42,6 +43,11 @@ namespace SpicaSDK.Services
         public static void SetApiKey(string apiKey)
         {
             spicaServer.Identity = new Identity(apiKey, "APIKEY", string.Empty);
+        }
+
+        public static void SetJWT(string jwt)
+        {
+            spicaServer.Identity = new Identity(jwt, "IDENTITY", String.Empty);
         }
 
         public static class Bucket

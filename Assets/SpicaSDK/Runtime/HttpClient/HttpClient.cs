@@ -125,6 +125,8 @@ namespace SpicaSDK
             }
             catch (UnityWebRequestException e)
             {
+                Debug.Log(
+                    $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {e.ResponseCode}");
                 return new Response((HttpStatusCode)e.ResponseCode, string.Empty);
             }
         }
