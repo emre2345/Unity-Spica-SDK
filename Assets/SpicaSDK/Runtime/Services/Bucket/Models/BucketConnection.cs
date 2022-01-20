@@ -27,11 +27,11 @@ namespace SpicaSDK.Services.Models
             }
         }
 
-        private IWebSocketConnection connection;
+        private IBucketRealtimeConnection connection;
         private CompositeDisposable subscriptions;
 
 
-        public BucketConnection(IWebSocketConnection connection)
+        public BucketConnection(IBucketRealtimeConnection connection)
         {
             this.connection = connection;
 

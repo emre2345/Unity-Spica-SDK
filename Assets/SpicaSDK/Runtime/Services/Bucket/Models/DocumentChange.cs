@@ -9,9 +9,9 @@ namespace SpicaSDK.Services.Models
 {
     public class DocumentChange<T> : IObservable<T> where T : class
     {
-        private IWebSocketConnection connection;
+        private IBucketRealtimeConnection connection;
 
-        public DocumentChange(IWebSocketConnection connection)
+        public DocumentChange(IBucketRealtimeConnection connection)
         {
             this.connection = connection;
         }

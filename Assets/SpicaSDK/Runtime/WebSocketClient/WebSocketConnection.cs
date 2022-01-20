@@ -12,15 +12,15 @@ namespace SpicaSDK.Services.WebSocketClient
     {
         private WebSocket socket;
         private IDisposable update;
-        private CompositeDisposable subscriptions;
+        protected CompositeDisposable subscriptions;
 
         private bool disconnected;
 
-        private IObservable<Unit> observeOpen;
-        private IObservable<string> observeError;
-        private IObservable<string> observeMessage;
-        private IObservable<WebSocketCloseCode> observeClose;
-        private IObservable<WebSocketState> observeState;
+        protected IObservable<Unit> observeOpen;
+        protected IObservable<string> observeError;
+        protected IObservable<string> observeMessage;
+        protected IObservable<WebSocketCloseCode> observeClose;
+        protected IObservable<WebSocketState> observeState;
 
         public WebSocketConnection(WebSocket socket)
         {
@@ -38,8 +38,13 @@ namespace SpicaSDK.Services.WebSocketClient
             observeClose.Subscribe(code =>
                 Debug.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}"));
 
+            StartMessageDispatch();
+        }
+
+        void StartMessageDispatch()
+        {
 #if !UNITY_WEBGL || UNITY_EDITOR
-            update = Observable.EveryUpdate().Subscribe(l => this.socket.DispatchMessageQueue());
+            update = Observable.EveryUpdate().Subscribe(l => socket.DispatchMessageQueue());
 #endif
         }
 
@@ -66,11 +71,11 @@ namespace SpicaSDK.Services.WebSocketClient
             observeState = socket.ObserveEveryValueChanged(webSocket => webSocket.State).Share();
         }
 
-        public IDisposable Subscribe(IObserver<ServerMessage> observer)
-        {
-            return observeMessage
-                .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s)).Subscribe(observer).AddTo(subscriptions);
-        }
+        // public IDisposable Subscribe(IObserver<ServerMessage> observer)
+        // {
+        //     return observeMessage
+        //         .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s)).Subscribe(observer).AddTo(subscriptions);
+        // }
 
         public UniTask Connected()
         {
