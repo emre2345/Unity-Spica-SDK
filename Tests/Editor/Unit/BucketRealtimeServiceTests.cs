@@ -21,7 +21,7 @@ namespace SpicaSDK.Tests.Editor.Unit
     {
         public class BucketRealtimeServiceTests
         {
-            private void WhenSentMessageThroughWebSocketDo(IWebSocketConnection connection,
+            private void WhenSentMessageThroughWebSocketDo(IBucketRealtimeConnection connection,
                 Action<Tuple<string, TestBucketDataModel>> doDlg) =>
                 connection.When(socketConnection => socketConnection.SendMessageAsync(Arg.Any<string>())).Do(
                     delegate(CallInfo info)
@@ -32,7 +32,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                         doDlg(new Tuple<string, TestBucketDataModel>(serverMessage.Event, serverMessage.data));
                     });
 
-            private void WhenWebSocketSubscribed(IWebSocketConnection connection, Func<CallInfo, IDisposable> dlg) =>
+            private void WhenWebSocketSubscribed(IBucketRealtimeConnection connection,
+                Func<CallInfo, IDisposable> dlg) =>
                 connection.Subscribe(Arg.Any<IObserver<ServerMessage>>()).Returns(dlg);
 
             private (BucketService, IWebSocketClient) MockBucketService
@@ -52,13 +53,13 @@ namespace SpicaSDK.Tests.Editor.Unit
             public IEnumerator WatchDocument() => UniTask.ToCoroutine(async delegate()
             {
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
                 var firstData = TestDatas[0];
 
-                webSocketClient.ConnectAsync(string.Empty)
-                    .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(webSocketConnection));
-                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
+                webSocketClient.ConnectAsync(string.Empty, socket => new BucketRealtimeConnection(socket))
+                    .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
+                WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
                     return firstData.ObserveEveryValueChanged(model => model.Title).Skip(1).Select(s =>
                     {
@@ -69,7 +70,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                 });
 
                 DocumentChange<TestBucketDataModel> documentConnection =
-                    await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(TestBucketId), firstData.Id);
+                    await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(TestBucketId),
+                        firstData.Id);
 
                 string newTitle = "newTitle";
 
@@ -90,16 +92,16 @@ namespace SpicaSDK.Tests.Editor.Unit
             public IEnumerator WatchBucket() => UniTask.ToCoroutine(async delegate()
             {
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var newData = new TestBucketDataModel("new", "new");
 
                 // ---
 
-                webSocketClient.ConnectAsync(string.Empty)
-                    .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(webSocketConnection));
-                webSocketConnection.Subscribe(Arg.Any<IObserver<ServerMessage>>()).Returns(delegate(CallInfo info)
+                webSocketClient.ConnectAsync(string.Empty, socket => new BucketRealtimeConnection(socket))
+                    .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
+                bucketRealtimeConnection.Subscribe(Arg.Any<IObserver<ServerMessage>>()).Returns(delegate(CallInfo info)
                 {
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Select(list =>
                             new ServerMessage(DataChangeType.Insert, JsonConvert.SerializeObject(newData)))
@@ -137,18 +139,18 @@ namespace SpicaSDK.Tests.Editor.Unit
                 CancellationTokenSource source = new CancellationTokenSource();
 
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var newData = new TestBucketDataModel("new", "new");
 
                 // ---
 
-                webSocketClient.ConnectAsync(Arg.Any<string>())
-                    .Returns(new UniTask<IWebSocketConnection>(webSocketConnection));
-                WhenSentMessageThroughWebSocketDo(webSocketConnection, message => datas.Add(message.Item2));
+                webSocketClient.ConnectAsync(Arg.Any<string>(), socket => new BucketRealtimeConnection(socket))
+                    .Returns(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
+                WhenSentMessageThroughWebSocketDo(bucketRealtimeConnection, message => datas.Add(message.Item2));
 
-                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
+                WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i > TestDatas.Length)
                         .Select(
@@ -182,16 +184,16 @@ namespace SpicaSDK.Tests.Editor.Unit
                 CancellationTokenSource source = new CancellationTokenSource();
 
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var deletedData = datas[0];
 
-                webSocketClient.ConnectAsync(String.Empty)
-                    .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(webSocketConnection));
-                WhenSentMessageThroughWebSocketDo(webSocketConnection, message => datas.Remove(deletedData));
+                webSocketClient.ConnectAsync(String.Empty, socket => new BucketRealtimeConnection(socket))
+                    .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
+                WhenSentMessageThroughWebSocketDo(bucketRealtimeConnection, message => datas.Remove(deletedData));
 
-                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
+                WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
                     return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i < TestDatas.Length)
                         .Select(i =>
@@ -224,16 +226,16 @@ namespace SpicaSDK.Tests.Editor.Unit
                 CancellationTokenSource source = new CancellationTokenSource();
 
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var patchedData = datas[0];
                 var newTitle = "patchedTitle";
 
-                webSocketClient.ConnectAsync(Arg.Any<string>())
-                    .Returns(new UniTask<IWebSocketConnection>(webSocketConnection));
-                WhenSentMessageThroughWebSocketDo(webSocketConnection, tuple => datas[0].Title = newTitle);
-                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
+                webSocketClient.ConnectAsync(Arg.Any<string>(), socket => new BucketRealtimeConnection(socket))
+                    .Returns(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
+                WhenSentMessageThroughWebSocketDo(bucketRealtimeConnection, tuple => datas[0].Title = newTitle);
+                WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
                     return datas[0].ObserveEveryValueChanged(model => model.Title).Skip(1).Select(i =>
                     {
@@ -264,15 +266,15 @@ namespace SpicaSDK.Tests.Editor.Unit
                 CancellationTokenSource source = new CancellationTokenSource();
 
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
                 var datas = new List<TestBucketDataModel>(TestDatas);
                 var replacedData = new TestBucketDataModel("replacedTitle", "replacedDesc");
 
-                webSocketClient.ConnectAsync(Arg.Any<string>())
-                    .Returns(new UniTask<IWebSocketConnection>(webSocketConnection));
-                WhenSentMessageThroughWebSocketDo(webSocketConnection, tuple => datas[0] = replacedData);
-                WhenWebSocketSubscribed(webSocketConnection, delegate(CallInfo info)
+                webSocketClient.ConnectAsync(Arg.Any<string>(), socket => new BucketRealtimeConnection(socket))
+                    .Returns(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
+                WhenSentMessageThroughWebSocketDo(bucketRealtimeConnection, tuple => datas[0] = replacedData);
+                WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
                     return datas.ObserveEveryValueChanged(list => list[0]).Skip(1).Select(i =>
                     {
@@ -305,17 +307,17 @@ namespace SpicaSDK.Tests.Editor.Unit
                 CancellationTokenSource source = new CancellationTokenSource(1000);
 
                 (BucketService bucketService, IWebSocketClient webSocketClient) = MockBucketService;
-                IWebSocketConnection webSocketConnection = MockWebSocketConnection;
+                IBucketRealtimeConnection bucketRealtimeConnection = MockBucketRealtimeConnection;
 
-                webSocketClient.ConnectAsync(Arg.Any<string>())
-                    .Returns(info => new UniTask<IWebSocketConnection>(webSocketConnection));
+                webSocketClient.ConnectAsync(Arg.Any<string>(), socket => new BucketRealtimeConnection(socket))
+                    .Returns(info => new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
 
                 BucketConnection<TestBucketDataModel> bucketConnection =
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
                 bucketConnection.Dispose();
-                webSocketConnection.Received().DisconnectAsync();
+                bucketRealtimeConnection.Received().DisconnectAsync();
 
                 await UniTask.WaitUntilCanceled(source.Token);
             });

@@ -1,11 +1,8 @@
-using System;
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.WebSocketClient;
-using UniRx;
 
 namespace SpicaSDK.Services
 {
@@ -38,7 +35,8 @@ namespace SpicaSDK.Services
 
 
                 string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.GetString();
-                IWebSocketConnection connection = await webSocketClient.ConnectAsync(url);
+                IBucketRealtimeConnection connection =
+                    await webSocketClient.ConnectAsync(url, socket => new BucketRealtimeConnection(socket)) as IBucketRealtimeConnection;
                 return new DocumentChange<T>(connection);
             }
 
@@ -47,7 +45,7 @@ namespace SpicaSDK.Services
             {
                 queryParams.Add("Authorization", $"{server.Identity.Scheme} {server.Identity.Token}");
                 string url = server.BucketDataUrl(bucketId).Replace("http", "ws") + "?" + queryParams.GetString();
-                var connection = await webSocketClient.ConnectAsync(url);
+                var connection = await webSocketClient.ConnectAsync(url, socket => new BucketRealtimeConnection(socket)) as IBucketRealtimeConnection;
                 return new BucketConnection<T>(connection);
             }
         }

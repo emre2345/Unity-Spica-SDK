@@ -11,11 +11,11 @@ namespace SpicaSDK.Services.WebSocketClient
 {
     public class WebSocketClient : IWebSocketClient, IDisposable
     {
-        private List<WebSocketConnection> allConnections;
+        private List<IWebSocketConnection> allConnections;
 
         public WebSocketClient()
         {
-            allConnections = new List<WebSocketConnection>();
+            allConnections = new List<IWebSocketConnection>();
         }
 
         ~WebSocketClient()
@@ -23,7 +23,8 @@ namespace SpicaSDK.Services.WebSocketClient
             Dispose();
         }
 
-        public async UniTask<IWebSocketConnection> ConnectAsync(string url)
+        public async UniTask<IWebSocketConnection> ConnectAsync(string url,
+            Func<WebSocket, IWebSocketConnection> connectionFactory)
         {
             Debug.Log($"WS Connecting to: {url}");
             var socket = new WebSocket(url);
@@ -31,7 +32,7 @@ namespace SpicaSDK.Services.WebSocketClient
             await socket.ObserveEveryValueChanged(webSocket => webSocket.State)
                 .First(state => state == WebSocketState.Open).ToUniTask();
 
-            var connection = new WebSocketConnection(socket);
+            var connection = connectionFactory(socket); //new BucketRealtimeConnection(socket);
             allConnections.Add(connection);
             return connection;
         }

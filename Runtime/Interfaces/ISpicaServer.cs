@@ -14,6 +14,8 @@ namespace SpicaSDK.Interfaces
         string BucketDataUrl(Id bucketId);
 
         string BucketDataDocumentUrl(Id bucketId, Id documentId);
+        
+        string FirehoseUrl { get; }
 
         string IdentityUrl { get; }
         

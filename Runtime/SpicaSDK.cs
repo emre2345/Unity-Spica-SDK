@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using Plugins.SpicaSDK.Runtime.Services.Function.Firehose;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services.Exceptions;
@@ -16,6 +17,7 @@ namespace SpicaSDK.Services
         private static IHttpClient httpClient;
         private static IWebSocketClient webSocketClient;
         private static BucketService bucketService;
+        private static Firehose firehose;
 
         static SpicaSDK()
         {
@@ -23,6 +25,7 @@ namespace SpicaSDK.Services
             webSocketClient = new WebSocketClient.WebSocketClient();
             spicaServer = new SpicaServer(SpicaServerConfiguration.Instance, httpClient);
             bucketService = new BucketService(spicaServer, httpClient, webSocketClient);
+            firehose = new Firehose(spicaServer, webSocketClient);
         }
 
         public static bool LoggedIn { get; private set; }
@@ -119,6 +122,17 @@ namespace SpicaSDK.Services
                 return httpClient.GetAsync(
                     new Request($"{SpicaServerConfiguration.Instance.RootUrl}/api/fn-execute/{functionName}",
                         queryParams.GetString()));
+            }
+        }
+
+        public static class Function
+        {
+            public static class Firehose
+            {
+                public static UniTask<FirehoseConnection<T>> Connect<T>(QueryParams queryParams)
+                {
+                    return firehose.Connect<T>(queryParams);
+                }
             }
         }
     }

@@ -34,6 +34,8 @@ namespace SpicaSDK.Services
         public string BucketDataDocumentUrl(Id bucketId, Id documentId) =>
             $"{rootUrl}/api/bucket/{bucketId}/data/{documentId}";
 
+        public string FirehoseUrl => $"{rootUrl.Replace("http", "ws")}/api/firehose";
+
         public string IdentityUrl => $"{rootUrl}/api/passport/identify";
 
         private Identity identity;
