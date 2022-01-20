@@ -4,6 +4,10 @@ namespace SpicaSDK.Runtime.Utils
 {
     public class QueryParams : KeyValueStringBuilder
     {
+        private static QueryParams empty = new QueryParams(0);
+
+        public static QueryParams Empty => empty;
+
         public QueryParams()
         {
         }

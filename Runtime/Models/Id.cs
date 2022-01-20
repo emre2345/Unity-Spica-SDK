@@ -1,7 +1,14 @@
+using System;
+
 namespace SpicaSDK.Services.Models
 {
     public readonly struct Id
     {
+        private static Id empty = new Id(String.Empty);
+        public static Id Empty => empty;
+
+        public static Id From(string value) => new Id(value);
+        
         public readonly string Value;
 
         public Id(string _id)
