@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpicaSDK.Runtime.Utils
 {
@@ -30,5 +31,8 @@ namespace SpicaSDK.Runtime.Utils
         public void Add(string key, object value) => this.value.Add(new SingleParam(key, value));
 
         public abstract string GetString();
+
+        public IDictionary<string, object> ToDictionary() =>
+            value.ToDictionary(param => param.Key, param => param.Value);
     }
 }
