@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UnityEngine;
 
 namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose

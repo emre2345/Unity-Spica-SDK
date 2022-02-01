@@ -3,6 +3,8 @@ using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Services.Function.Firehose;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services.WebSocketClient;
 using UniRx;
 using UniRx.Diagnostics;

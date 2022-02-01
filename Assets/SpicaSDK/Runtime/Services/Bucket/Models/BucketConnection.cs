@@ -1,14 +1,16 @@
 using System;
 using System.Net;
 using Cysharp.Threading.Tasks;
+using NativeWebSocket;
 using Newtonsoft.Json;
-using SpicaSDK.Interfaces;
-using SpicaSDK.Services.WebSocketClient;
+using SpicaSDK.Runtime.Services.Bucket.Realtime;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
 
 namespace SpicaSDK.Services.Models
 {
-    public class BucketConnection<T> : IDisposable, IObservable<BucketConnection<T>.BucketChange<T>> where T : class
+    public class BucketConnection<T> : IDisposable, IConnectionStateOwner,
+        IObservable<BucketConnection<T>.BucketChange<T>> where T : class
     {
         public struct BucketChange<T>
         {
@@ -29,6 +31,9 @@ namespace SpicaSDK.Services.Models
 
         private IBucketRealtimeConnection connection;
         private CompositeDisposable subscriptions;
+
+        public IObservable<WebSocketState> ObserveState => connection.ObserveState;
+        public IObservable<WebSocketCloseCode> ObserveConnectionClose => connection.ObserveConnectionClose;
 
 
         public BucketConnection(IBucketRealtimeConnection connection)

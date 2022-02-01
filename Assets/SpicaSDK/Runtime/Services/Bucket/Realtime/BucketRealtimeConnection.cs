@@ -2,6 +2,8 @@ using System;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Services.Bucket.Realtime;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
 
 namespace SpicaSDK.Services.WebSocketClient

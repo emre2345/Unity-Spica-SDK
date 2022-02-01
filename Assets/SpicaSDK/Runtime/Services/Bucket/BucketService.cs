@@ -7,6 +7,7 @@ using SpicaSDK.Services.Exceptions;
 using SpicaSDK.Services.Models;
 using Newtonsoft.Json;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UnityEngine;
 
 namespace SpicaSDK.Services
