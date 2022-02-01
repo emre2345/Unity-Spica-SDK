@@ -1,13 +1,13 @@
 using System;
-using Newtonsoft.Json;
-using SpicaSDK.Interfaces;
+using NativeWebSocket;
+using SpicaSDK.Runtime.Services.Bucket.Realtime;
 using SpicaSDK.Services.WebSocketClient;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
-using UnityEngine;
 
 namespace SpicaSDK.Services.Models
 {
-    public class DocumentChange<T> : IObservable<T> where T : class
+    public class DocumentChange<T> : IConnectionStateOwner, IObservable<T> where T : class
     {
         private IBucketRealtimeConnection connection;
 
@@ -47,5 +47,8 @@ namespace SpicaSDK.Services.Models
                 .Select(message => message.Document.ToObject<T>()).Finally(() => connection.DisconnectAsync())
                 .Subscribe(observer);
         }
+
+        public IObservable<WebSocketState> ObserveState => connection.ObserveState;
+        public IObservable<WebSocketCloseCode> ObserveConnectionClose => connection.ObserveConnectionClose;
     }
 }

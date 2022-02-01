@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Services.Bucket.Realtime;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;

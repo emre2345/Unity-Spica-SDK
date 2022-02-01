@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
 using UnityEngine;
 
@@ -36,7 +37,12 @@ namespace SpicaSDK.Services.WebSocketClient
             observeError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
 
             observeClose.Subscribe(code =>
-                Debug.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}"));
+            {
+                Debug.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}");
+
+                if (code != WebSocketCloseCode.Normal)
+                    Dispose();
+            });
 
             StartMessageDispatch();
         }
@@ -66,9 +72,9 @@ namespace SpicaSDK.Services.WebSocketClient
 
             observeClose = Observable.FromEvent<WebSocketCloseEventHandler, WebSocketCloseCode>(action => action.Invoke,
                 action => socket.OnClose += action,
-                action => socket.OnClose -= action);
+                action => socket.OnClose -= action).Share();
 
-            observeState = socket.ObserveEveryValueChanged(webSocket => webSocket.State).Share();
+            observeState = socket.ObserveEveryValueChanged(webSocket => webSocket.State).Replay(1).RefCount();
         }
 
         // public IDisposable Subscribe(IObserver<ServerMessage> observer)
@@ -77,17 +83,20 @@ namespace SpicaSDK.Services.WebSocketClient
         //         .Select(s => JsonConvert.DeserializeObject<ServerMessage>(s)).Subscribe(observer).AddTo(subscriptions);
         // }
 
-        public UniTask Connected()
-        {
-            return UniTask.WaitUntil(() => socket.State == WebSocketState.Open);
-        }
+        public IObservable<WebSocketCloseCode> ObserveConnectionClose => observeClose;
+        public IObservable<WebSocketState> ObserveState => observeState;
 
         public async UniTask DisconnectAsync()
         {
             disconnected = true;
+            Dispose();
+            await socket.Close();
+        }
+
+        void Dispose()
+        {
             update.Dispose();
             subscriptions.Clear();
-            await socket.Close();
         }
 
         public async UniTask SendMessageAsync(string message)

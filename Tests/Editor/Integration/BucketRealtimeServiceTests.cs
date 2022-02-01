@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;

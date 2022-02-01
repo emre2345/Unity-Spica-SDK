@@ -31,6 +31,7 @@ namespace SpicaSDK
         {
             return CreateAndSendRequest(() =>
             {
+                Debug.Log($"[{nameof(HttpClient)}] Post request: {request.Url}\nBody:\n{request.Payload}");
                 var req = new UnityWebRequest(request.Url, "POST");
                 var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(request.Payload));
                 uploadHandler.contentType = "application/json";
@@ -121,13 +122,18 @@ namespace SpicaSDK
                 Debug.Log(
                     $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {operation.responseCode}\nResponse:\n{operation.downloadHandler.text}");
 
-                return new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
+                var response = new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
+
+                req.Dispose();
+                return response;
             }
             catch (UnityWebRequestException e)
             {
                 Debug.LogError(
-                    $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {e.ResponseCode}");
-                return new Response((HttpStatusCode)e.ResponseCode, string.Empty);
+                    $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {e.ResponseCode}\nResponse Text: {e.Text}");
+                var response = new Response((HttpStatusCode)e.ResponseCode, string.Empty);
+                req.Dispose();
+                return response;
             }
         }
     }

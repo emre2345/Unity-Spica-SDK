@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Plugins.SpicaSDK.Runtime.Services.Function.Firehose;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services.Exceptions;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity;

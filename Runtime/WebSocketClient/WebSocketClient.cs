@@ -4,12 +4,13 @@ using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
 using UnityEngine;
 
 namespace SpicaSDK.Services.WebSocketClient
 {
-    public class WebSocketClient : IWebSocketClient, IDisposable
+    public class WebSocketClient : IWebSocketClient
     {
         private List<IWebSocketConnection> allConnections;
 
