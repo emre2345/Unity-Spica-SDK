@@ -4,6 +4,7 @@ using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Services.Function.Firehose;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services.WebSocketClient;
 using UniRx;
@@ -20,7 +21,7 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
         {
             sharedMessage = observeMessage
                 .Select(s => JsonConvert.DeserializeObject<T>(s))
-                .Do(s => Debug.Log($"[{nameof(FirehoseConnection<T>)}] Received message: {s}")).Share();
+                .Do(s => SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Received message: {s}")).Share();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
@@ -31,7 +32,7 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
 
         public async UniTask SendMessage(FirehoseMessage message)
         {
-            Debug.Log($"[{nameof(FirehoseConnection<T>)}] Sending message: {message}");
+            SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Sending message: {message}");
             await SendMessageAsync(message.ToString());
         }
     }

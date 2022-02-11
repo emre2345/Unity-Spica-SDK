@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -31,7 +32,7 @@ namespace SpicaSDK
         {
             return CreateAndSendRequest(() =>
             {
-                Debug.Log($"[{nameof(HttpClient)}] Post request: {request.Url}\nBody:\n{request.Payload}");
+                SpicaLogger.Instance.Log($"[{nameof(HttpClient)}] Post request: {request.Url}\nBody:\n{request.Payload}");
                 var req = new UnityWebRequest(request.Url, "POST");
                 var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(request.Payload));
                 uploadHandler.contentType = "application/json";
@@ -92,7 +93,7 @@ namespace SpicaSDK
                 if (!string.IsNullOrEmpty(request.Payload))
                     url += $"?{request.Payload}";
 
-                Debug.Log($"[{nameof(HttpClient)}] Get request: {url}");
+                SpicaLogger.Instance.Log($"[{nameof(HttpClient)}] Get request: {url}");
                 var req = UnityWebRequest.Get(url);
                 SetHeaders(req, request.Headers);
                 return req;
@@ -101,10 +102,8 @@ namespace SpicaSDK
 
         private void SetHeaders(UnityWebRequest request, Dictionary<string, string> headers)
         {
-            // Debug.Log($"[{nameof(HttpClient)}] adding headers to: {request.url}");
             foreach (var requestHeader in headers)
             {
-                // Debug.Log($"[{nameof(HttpClient)}] Header: {requestHeader.Key} - {requestHeader.Value}");
                 request.SetRequestHeader(requestHeader.Key, requestHeader.Value);
             }
         }
@@ -119,7 +118,7 @@ namespace SpicaSDK
             {
                 var operation = await req.SendWebRequest();
 
-                Debug.Log(
+                SpicaLogger.Instance.Log(
                     $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {operation.responseCode}\nResponse:\n{operation.downloadHandler.text}");
 
                 var response = new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
@@ -129,7 +128,7 @@ namespace SpicaSDK
             }
             catch (UnityWebRequestException e)
             {
-                Debug.LogError(
+                SpicaLogger.Instance.LogError(nameof(HttpClient),
                     $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {e.ResponseCode}\nResponse Text: {e.Text}");
                 var response = new Response((HttpStatusCode)e.ResponseCode, string.Empty);
                 req.Dispose();

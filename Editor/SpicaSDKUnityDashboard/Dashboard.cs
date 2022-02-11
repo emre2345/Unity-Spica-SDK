@@ -15,6 +15,7 @@ using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.Proper
 using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.PropertySelfAttributes;
 using SpicaSDK.Editor.OrmTemplate;
 using SpicaSDK.Editor.SpicaSDKUnityDashboard;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.Services.Identity.Models;
@@ -44,7 +45,7 @@ public class Dashboard : ScriptableObject
 
             SpicaServerConfiguration config = CreateInstance<SpicaServerConfiguration>();
             AssetDatabase.CreateAsset(config, $"Assets/Resources/{nameof(SpicaServerConfiguration)}.asset");
-            SpicaLogger.Log("Created a config file in the Resources Folder");
+            SpicaLogger.Instance.Log("Created a config file in the Resources Folder");
         }
     }
 
@@ -56,7 +57,7 @@ public class Dashboard : ScriptableObject
         {
             Identity identity = await SpicaSDK.Services.SpicaSDK.LogIn(UserName, Password);
             SpicaSDK.Services.SpicaSDK.SetIdentity(identity);
-            SpicaLogger.Log("Logged in successfully");
+            SpicaLogger.Instance.Log("Logged in successfully");
         }
         finally
         {

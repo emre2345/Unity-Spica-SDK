@@ -29,6 +29,8 @@ namespace SpicaSDK.Services
             firehose = new Firehose(spicaServer, webSocketClient);
         }
 
+        public static bool LogEnabled => SpicaLogger.LogsEnabled;
+
         public static bool LoggedIn { get; private set; }
 
         public static void SetIdentity(Identity identity)
