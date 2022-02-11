@@ -164,6 +164,7 @@ public class Dashboard : ScriptableObject
                 return BuiltInDataType.Double.ToTextLower();
             case "textarea":
             case "richtext":
+            case "storage":
             case "string":
                 return BuiltInDataType.String.ToTextLower();
             case "boolean":
