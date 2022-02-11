@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace SpicaSDK.Services.WebSocketClient
         public async UniTask<IWebSocketConnection> ConnectAsync(string url,
             Func<WebSocket, IWebSocketConnection> connectionFactory)
         {
-            Debug.Log($"WS Connecting to: {url}");
+            SpicaLogger.Instance.Log($"WS Connecting to: {url}");
             var socket = new WebSocket(url);
             socket.Connect();
             await socket.ObserveEveryValueChanged(webSocket => webSocket.State)

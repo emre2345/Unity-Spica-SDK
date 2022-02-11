@@ -1,11 +1,9 @@
 using System;
 using Cysharp.Threading.Tasks;
 using NativeWebSocket;
-using Newtonsoft.Json;
-using SpicaSDK.Interfaces;
+using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
-using UnityEngine;
 
 namespace SpicaSDK.Services.WebSocketClient
 {
@@ -32,13 +30,13 @@ namespace SpicaSDK.Services.WebSocketClient
             CreateObservables();
 
             observeOpen.First()
-                .Subscribe(unit => Debug.Log($"[ {nameof(WebSocketClient)} ] Connection established"));
+                .Subscribe(unit => SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] Connection established"));
 
-            observeError.Subscribe(s => Debug.LogWarning($"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
+            observeError.Subscribe(s => SpicaLogger.Instance.LogWarning(nameof(WebSocketConnection), "[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
 
             observeClose.Subscribe(code =>
             {
-                Debug.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}");
+                SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}");
 
                 if (code != WebSocketCloseCode.Normal)
                     Dispose();
@@ -68,7 +66,7 @@ namespace SpicaSDK.Services.WebSocketClient
                 Observable.FromEvent<WebSocketMessageEventHandler, string>(action =>
                         (data => action.Invoke(System.Text.Encoding.UTF8.GetString(data))),
                     handler => socket.OnMessage += handler, handler => socket.OnMessage -= handler).Do(s =>
-                    Debug.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}")).Share();
+                    SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}")).Share();
 
             observeClose = Observable.FromEvent<WebSocketCloseEventHandler, WebSocketCloseCode>(action => action.Invoke,
                 action => socket.OnClose += action,
