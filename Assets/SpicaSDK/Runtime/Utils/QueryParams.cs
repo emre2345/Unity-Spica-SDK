@@ -4,9 +4,7 @@ namespace SpicaSDK.Runtime.Utils
 {
     public class QueryParams : KeyValueStringBuilder
     {
-        private static QueryParams empty = new QueryParams(0);
-
-        public static QueryParams Empty => empty;
+        public static QueryParams Empty => new QueryParams(0);
 
         public QueryParams()
         {
@@ -18,16 +16,16 @@ namespace SpicaSDK.Runtime.Utils
 
         public override string GetString()
         {
-                StringBuilder queryBuilder = new StringBuilder();
-                foreach (var queryStr in value)
-                {
-                    queryBuilder.Append($"{queryStr.Key}={queryStr.Value}&");
-                }
+            StringBuilder queryBuilder = new StringBuilder();
+            foreach (var queryStr in value)
+            {
+                queryBuilder.Append($"{queryStr.Key}={queryStr.Value}&");
+            }
 
-                if (queryBuilder.Length > 0)
-                    queryBuilder.Remove(queryBuilder.Length - 1, 1);
+            if (queryBuilder.Length > 0)
+                queryBuilder.Remove(queryBuilder.Length - 1, 1);
 
-                return queryBuilder.ToString();
+            return queryBuilder.ToString();
         }
     }
 }
