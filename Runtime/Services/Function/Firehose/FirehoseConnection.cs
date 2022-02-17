@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Services.Function.Firehose;
 using SpicaSDK.Runtime.Utils;
@@ -20,7 +22,11 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
         public FirehoseConnection(WebSocket socket) : base(socket)
         {
             sharedMessage = observeMessage
-                .Select(s => JsonConvert.DeserializeObject<T>(s))
+                .Select(s =>
+                {
+                    JObject response = JsonConvert.DeserializeObject<JObject>(s);
+                    return JsonConvert.DeserializeObject<T>(response["data"].ToString());
+                })
                 .Do(s => SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Received message: {s}")).Share();
         }
 
