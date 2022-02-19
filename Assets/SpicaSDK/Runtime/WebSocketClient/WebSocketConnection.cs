@@ -37,7 +37,7 @@ namespace SpicaSDK.Services.WebSocketClient
             observeClose.Subscribe(code =>
             {
                 SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}");
-
+            
                 if (code != WebSocketCloseCode.Normal)
                     Dispose();
             });
@@ -93,7 +93,7 @@ namespace SpicaSDK.Services.WebSocketClient
 
         void Dispose()
         {
-            update.Dispose();
+            update?.Dispose();
             subscriptions.Clear();
         }
 
