@@ -7,7 +7,7 @@ using UniRx;
 
 namespace SpicaSDK.Services.Models
 {
-    public class DocumentChange<T> : IConnectionStateOwner, IObservable<T> where T : class
+    public class DocumentChange<T> : IObservable<T> where T : class
     {
         private IBucketRealtimeConnection connection;
 
@@ -48,7 +48,6 @@ namespace SpicaSDK.Services.Models
                 .Subscribe(observer);
         }
 
-        public IObservable<WebSocketState> ObserveState => connection.ObserveState;
-        public IObservable<WebSocketCloseCode> ObserveClose => connection.ObserveClose;
+        public void ReconnectWhen(Predicate<WebSocketCloseCode> condition) => connection.ReconnectWhen(condition);
     }
 }

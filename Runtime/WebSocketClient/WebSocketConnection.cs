@@ -1,7 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
 using NativeWebSocket;
-using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services.WebSocketClient.Extensions;
 using UniRx;
@@ -15,6 +14,7 @@ namespace SpicaSDK.Services.WebSocketClient
         protected CompositeDisposable subscriptions;
 
         private bool disconnected;
+        private Predicate<WebSocketCloseCode> reconnectionCondition;
 
         public WebSocketConnection(IWebSocket socket)
         {
@@ -22,26 +22,13 @@ namespace SpicaSDK.Services.WebSocketClient
 
             this.socket = socket;
 
-            socket.ObserveOpen.First()
-                .Subscribe(unit => SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] Connection established"));
-
-            socket.ObserveError.Subscribe(s => SpicaLogger.Instance.LogWarning(nameof(WebSocketConnection),
-                $"[ {nameof(WebSocketClient)} ] Connection Error:\n{s}"));
-
-            socket.ObserveClose.Subscribe(code =>
-            {
-                SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}");
-
-                if (code != WebSocketCloseCode.Normal)
-                    Dispose();
-            });
+            socket.ObserveClose.Where(code => reconnectionCondition?.Invoke(code) ?? false)
+                .Where(code => code != WebSocketCloseCode.Normal).Subscribe(code => Dispose());
         }
-
-        public IObservable<WebSocketCloseCode> ObserveClose => socket.ObserveClose;
-        public IObservable<WebSocketState> ObserveState => socket.ObserveState;
 
         public void ReconnectWhen(Predicate<WebSocketCloseCode> condition)
         {
+            reconnectionCondition = condition;
             socket.Reconnect(condition);
         }
 
