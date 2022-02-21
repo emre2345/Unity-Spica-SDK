@@ -9,16 +9,51 @@ namespace SpicaSDK.Services.WebSocketClient
 {
     public class WebSocket : IWebSocket
     {
+        // private NativeWebSocket.WebSocket socket;
+        private string url;
         private NativeWebSocket.WebSocket socket;
         private IDisposable update;
         private ReactiveProperty<WebSocketState> state;
 
         public WebSocket(string url)
         {
+            this.url = url;
+        }
+
+        public IObservable<Unit> ObserveOpen { get; private set; }
+        public IObservable<string> ObserveError { get; private set; }
+        public IObservable<string> ObserveMessage { get; private set; }
+        public IObservable<WebSocketCloseCode> ObserveClose { get; private set; }
+
+        public IObservable<WebSocketState> ObserveState => state;
+
+        public WebSocketState State => state.Value;
+
+        public UniTask Connect()
+        {
+            CreateSocket();
+            StartMessageDispatch();
+
+            return socket.Connect().AsUniTask();
+        }
+
+        void CreateSocket()
+        {
             socket = new NativeWebSocket.WebSocket(url);
             state = new ReactiveProperty<WebSocketState>(WebSocketState.Closed);
-            
+
             CreateObservables();
+
+            ObserveOpen.First()
+                .Subscribe(unit => SpicaLogger.Instance.Log($"[ {nameof(WebSocket)} ] Connection established"));
+
+            ObserveError.Subscribe(s => SpicaLogger.Instance.LogWarning(nameof(WebSocket),
+                $"[ {nameof(WebSocket)} ] Connection Error:\n{s}"));
+
+            ObserveClose.Subscribe(code =>
+            {
+                SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] Connection closed with code: {code}");
+            });
         }
 
         void CreateObservables()
@@ -43,22 +78,6 @@ namespace SpicaSDK.Services.WebSocketClient
 
             socket.ObserveEveryValueChanged(webSocket => webSocket.State)
                 .Subscribe(socketState => state.Value = socketState);
-        }
-
-        public IObservable<Unit> ObserveOpen { get; private set; }
-        public IObservable<string> ObserveError { get; private set; }
-        public IObservable<string> ObserveMessage { get; private set; }
-        public IObservable<WebSocketCloseCode> ObserveClose { get; private set; }
-
-        public IObservable<WebSocketState> ObserveState => state;
-
-        public WebSocketState State => state.Value;
-
-        public UniTask Connect()
-        {
-            StartMessageDispatch();
-
-            return socket.Connect().AsUniTask();
         }
 
         void StartMessageDispatch()

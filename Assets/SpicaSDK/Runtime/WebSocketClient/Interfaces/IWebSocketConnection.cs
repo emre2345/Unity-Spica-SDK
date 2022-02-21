@@ -4,7 +4,7 @@ using NativeWebSocket;
 
 namespace SpicaSDK.Runtime.WebSocketClient.Interfaces
 {
-    public interface IWebSocketConnection : IConnectionStateOwner
+    public interface IWebSocketConnection
     {
         void ReconnectWhen(Predicate<WebSocketCloseCode> condition);
         
