@@ -1,17 +1,12 @@
 using System;
-using System.IO;
 using Cysharp.Threading.Tasks;
-using NativeWebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Services.Function.Firehose;
 using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services.WebSocketClient;
 using UniRx;
-using UniRx.Diagnostics;
-using UnityEngine;
 
 namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
 {
@@ -19,9 +14,9 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
     {
         private IObservable<T> sharedMessage;
 
-        public FirehoseConnection(WebSocket socket) : base(socket)
+        public FirehoseConnection(IWebSocket socket) : base(socket)
         {
-            sharedMessage = observeMessage
+            sharedMessage = socket.ObserveMessage
                 .Select(s =>
                 {
                     JObject response = JsonConvert.DeserializeObject<JObject>(s);
