@@ -9,7 +9,7 @@ using UniRx;
 
 namespace SpicaSDK.Services.Models
 {
-    public class BucketConnection<T> : IDisposable, IConnectionStateOwner,
+    public class BucketConnection<T> : IDisposable,
         IObservable<BucketConnection<T>.BucketChange<T>> where T : class
     {
         public struct BucketChange<T>
@@ -31,10 +31,6 @@ namespace SpicaSDK.Services.Models
 
         private IBucketRealtimeConnection connection;
         private CompositeDisposable subscriptions;
-
-        public IObservable<WebSocketState> ObserveState => connection.ObserveState;
-        public IObservable<WebSocketCloseCode> ObserveClose => connection.ObserveClose;
-
 
         public BucketConnection(IBucketRealtimeConnection connection)
         {
@@ -95,6 +91,8 @@ namespace SpicaSDK.Services.Models
 
             await connection.SendMessageAsync(JsonConvert.SerializeObject(message));
         }
+
+        public void ReconnectWhen(Predicate<WebSocketCloseCode> condition) => connection.ReconnectWhen(condition);
 
         public void Dispose()
         {

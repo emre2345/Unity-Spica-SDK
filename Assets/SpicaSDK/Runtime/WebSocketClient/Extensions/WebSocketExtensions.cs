@@ -8,9 +8,9 @@ namespace SpicaSDK.Services.WebSocketClient.Extensions
 {
     public static class WebSocketExtensions
     {
-        public static void Reconnect(this IReconnectable reconnectable, Predicate<WebSocketCloseCode> condition)
+        public static void Reconnect(this IConnectable connectable, Predicate<WebSocketCloseCode> condition)
         {
-            reconnectable.ObserveClose.Where(code => condition(code)).DelayFrame(1).Subscribe(code => reconnectable.Connect());
+            connectable.ObserveClose.Where(code => condition(code)).DelayFrame(1).Subscribe(code => connectable.Connect());
         }
     }
 }

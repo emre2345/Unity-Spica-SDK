@@ -5,7 +5,7 @@ using UniRx;
 
 namespace SpicaSDK.Runtime.WebSocketClient.Interfaces
 {
-    public interface IWebSocket : IReconnectable
+    public interface IWebSocket : IConnectable
     {
         IObservable<Unit> ObserveOpen { get; }
 
