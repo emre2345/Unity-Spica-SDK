@@ -16,6 +16,7 @@ namespace SpicaSDK.Services.WebSocketClient
         public WebSocket(string url)
         {
             socket = new NativeWebSocket.WebSocket(url);
+            state = new ReactiveProperty<WebSocketState>(WebSocketState.Closed);
             
             CreateObservables();
         }
