@@ -6,15 +6,11 @@ namespace SpicaSDK.Runtime.WebSocketClient.Interfaces
 {
     public interface IWebSocketConnection : IConnectionStateOwner
     {
+        void ReconnectWhen(Predicate<WebSocketCloseCode> condition);
+        
         UniTask DisconnectAsync();
 
         UniTask SendMessageAsync(string message);
     }
 
-    public interface IConnectionStateOwner
-    {
-        IObservable<WebSocketState> ObserveState { get; }
-
-        IObservable<WebSocketCloseCode> ObserveConnectionClose { get; }
-    }
 }

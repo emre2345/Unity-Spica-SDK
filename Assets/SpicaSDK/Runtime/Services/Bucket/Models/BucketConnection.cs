@@ -33,7 +33,7 @@ namespace SpicaSDK.Services.Models
         private CompositeDisposable subscriptions;
 
         public IObservable<WebSocketState> ObserveState => connection.ObserveState;
-        public IObservable<WebSocketCloseCode> ObserveConnectionClose => connection.ObserveConnectionClose;
+        public IObservable<WebSocketCloseCode> ObserveClose => connection.ObserveClose;
 
 
         public BucketConnection(IBucketRealtimeConnection connection)

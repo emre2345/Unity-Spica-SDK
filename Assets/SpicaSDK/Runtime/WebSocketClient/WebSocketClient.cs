@@ -8,6 +8,7 @@ using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
 using UnityEngine;
+using IWebSocket = SpicaSDK.Runtime.WebSocketClient.Interfaces.IWebSocket;
 
 namespace SpicaSDK.Services.WebSocketClient
 {
@@ -26,7 +27,7 @@ namespace SpicaSDK.Services.WebSocketClient
         }
 
         public async UniTask<IWebSocketConnection> ConnectAsync(string url,
-            Func<WebSocket, IWebSocketConnection> connectionFactory)
+            Func<IWebSocket, IWebSocketConnection> connectionFactory)
         {
             SpicaLogger.Instance.Log($"WS Connecting to: {url}");
             var socket = new WebSocket(url);

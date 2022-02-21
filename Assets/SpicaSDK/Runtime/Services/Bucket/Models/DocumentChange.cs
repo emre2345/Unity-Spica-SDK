@@ -49,6 +49,6 @@ namespace SpicaSDK.Services.Models
         }
 
         public IObservable<WebSocketState> ObserveState => connection.ObserveState;
-        public IObservable<WebSocketCloseCode> ObserveConnectionClose => connection.ObserveConnectionClose;
+        public IObservable<WebSocketCloseCode> ObserveClose => connection.ObserveClose;
     }
 }
