@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -14,7 +15,6 @@ using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using SpicaSDK.Services;
 using SpicaSDK.Services.Models;
 using SpicaSDK.Services.WebSocketClient;
-using UniRx;
 using UnityEngine.TestTools;
 
 namespace SpicaSDK.Tests.Editor.Unit
@@ -63,12 +63,13 @@ namespace SpicaSDK.Tests.Editor.Unit
                     .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
                 WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
-                    return firstData.ObserveEveryValueChanged(model => model.Title).Skip(1).Select(s =>
-                    {
-                        var newData = new TestBucketDataModel(firstData.Id.Value, s, firstData.Description);
-                        return new ServerMessage(DataChangeType.Update,
-                            JsonConvert.SerializeObject(newData));
-                    }).Subscribe(info.Arg<IObserver<ServerMessage>>());
+                    return UniTask.WaitUntilValueChanged(firstData, model => model.Title).ToObservable()
+                        .Select(s =>
+                        {
+                            var newData = new TestBucketDataModel(firstData.Id.Value, s, firstData.Description);
+                            return new ServerMessage(DataChangeType.Update,
+                                JsonConvert.SerializeObject(newData));
+                        }).Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
 
                 DocumentChange<TestBucketDataModel> documentConnection =
@@ -84,7 +85,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => firstData.Title = newTitle);
+                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable().Subscribe(_ => firstData.Title = newTitle);
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -105,7 +106,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                     .ReturnsForAnyArgs(new UniTask<IWebSocketConnection>(bucketRealtimeConnection));
                 bucketRealtimeConnection.Subscribe(Arg.Any<IObserver<ServerMessage>>()).Returns(delegate(CallInfo info)
                 {
-                    return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Select(list =>
+                    return UniTask.WaitUntilValueChanged(datas, model => model.Count).ToObservable()
+                        .Select(list =>
                             new ServerMessage(DataChangeType.Insert, JsonConvert.SerializeObject(newData)))
                         .Subscribe(info.Arg<IObserver<ServerMessage>>());
                 });
@@ -127,7 +129,7 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 // ---
 
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(
+                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable().Subscribe(
                     unit => datas.Add(newData)
                 );
 
@@ -154,7 +156,8 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
-                    return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i > TestDatas.Length)
+                    var observable = UniTask.WaitUntilValueChanged(datas, model => model.Count).ToObservable();
+                    return observable.Where(i => i > TestDatas.Length)
                         .Select(
                             list =>
                                 new ServerMessage(DataChangeType.Insert,
@@ -175,7 +178,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                Observable.ReturnUnit().DelayFrame(5).Subscribe(unit => bucketConnection.Insert(newData));
+                UniTask.DelayFrame(5).ToObservable().Subscribe(_ => bucketConnection.Insert(newData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -197,7 +200,8 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
-                    return datas.ObserveEveryValueChanged(list => list.Count).Skip(1).Where(i => i < TestDatas.Length)
+                    var observable = UniTask.WaitUntilValueChanged(datas, model => model.Count).ToObservable();
+                    return observable.Where(i => i < TestDatas.Length)
                         .Select(i =>
                         {
                             return new ServerMessage(DataChangeType.Delete,
@@ -217,7 +221,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => bucketConnection.Delete(deletedData));
+                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
+                    .Subscribe(unit => bucketConnection.Delete(deletedData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -239,7 +244,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                 WhenSentMessageThroughWebSocketDo(bucketRealtimeConnection, tuple => datas[0].Title = newTitle);
                 WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
-                    return datas[0].ObserveEveryValueChanged(model => model.Title).Skip(1).Select(i =>
+                    var observable = UniTask.WaitUntilValueChanged(datas[0], model => model.Title).ToObservable();
+                    return observable.Select(i =>
                     {
                         return new ServerMessage(DataChangeType.Update,
                             JsonConvert.SerializeObject(new TestBucketDataModel(newTitle, patchedData.Description)));
@@ -257,7 +263,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit => bucketConnection.Patch(patchedData));
+                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
+                    .Subscribe(unit => bucketConnection.Patch(patchedData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -278,7 +285,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                 WhenSentMessageThroughWebSocketDo(bucketRealtimeConnection, tuple => datas[0] = replacedData);
                 WhenWebSocketSubscribed(bucketRealtimeConnection, delegate(CallInfo info)
                 {
-                    return datas.ObserveEveryValueChanged(list => list[0]).Skip(1).Select(i =>
+                    var observable = UniTask.WaitUntilValueChanged(datas, model => model[0]).ToObservable();
+                    return observable.Select(i =>
                     {
                         return new ServerMessage(DataChangeType.Replace,
                             JsonConvert.SerializeObject(replacedData));
@@ -297,7 +305,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                Observable.NextFrame(FrameCountType.EndOfFrame)
+                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
                     .Subscribe(unit => bucketConnection.Replace(replacedData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));

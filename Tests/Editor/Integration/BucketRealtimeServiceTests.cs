@@ -1,7 +1,8 @@
 using System;
-using UniRx;
 using System.Collections;
 using System.Net;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -71,15 +72,15 @@ namespace SpicaSDK.Tests.Editor.Integration
                 var documentWatch =
                     await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id), data.Id);
 
-                documentWatch.Do(model => Debug.Log(model.ToString())).Skip(1).Subscribe(
+                disposable.Add(documentWatch.Do(model => Debug.Log(model.ToString())).Skip(1).Subscribe(
                     delegate(TestBucketDataModel model)
                     {
                         Assert.AreEqual(newTitle, model.Title);
                         cancellationTokenSource.Cancel();
-                    }).AddTo(disposable);
+                    }));
 
                 await UniTask.Delay(1);
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(delegate(UniRx.Unit unit)
+                UniTask.NextFrame().ToObservable().Subscribe(_ =>
                 {
                     bucketService.Data.ReplaceAsync(new Id(newBucket.Id), data.Id,
                         new TestBucketDataModel(newTitle, data.Description));
@@ -107,17 +108,17 @@ namespace SpicaSDK.Tests.Editor.Integration
                 var documentWatch =
                     await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id), data.Id);
 
-                documentWatch.Subscribe(model => { },
+                disposable.Add(documentWatch.Subscribe(model => { },
                     () =>
                     {
                         Debug.Log("Subscription completed automatically because of deletion");
                         disposable.Clear();
                         cancellationTokenSource.Cancel();
-                    }).AddTo(disposable);
+                    }));
 
 
                 await UniTask.Delay(1);
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(delegate(UniRx.Unit unit)
+                UniTask.NextFrame(PlayerLoopTiming.LastUpdate).ToObservable().Subscribe(_ =>
                 {
                     bucketService.Data.RemoveAsync(new Id(newBucket.Id), data.Id);
                 });
@@ -141,13 +142,13 @@ namespace SpicaSDK.Tests.Editor.Integration
                     await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new Id("nonExistingId"));
 
-                documentWatch.Subscribe(model => { },
+                disposable.Add(documentWatch.Subscribe(model => { },
                     () =>
                     {
                         Debug.Log("Subscription dropped automatically because of non existing data");
                         disposable.Clear();
                         cancellationTokenSource.Cancel();
-                    }).AddTo(disposable);
+                    }));
 
                 await UniTask.WaitUntilCanceled(cancellationTokenSource.Token).Timeout(TimeSpan.FromSeconds(5));
                 await bucketService.DeleteAsync(new Id(newBucket.Id));
@@ -170,15 +171,16 @@ namespace SpicaSDK.Tests.Editor.Integration
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new QueryParams());
 
-                bucketConnection.Where(change => change.Kind != DataChangeType.Initial).Subscribe(change =>
-                {
-                    Assert.AreEqual(DataChangeType.Insert, change.Kind);
-                    disposable.Clear();
-                    cancellationTokenSource.Cancel();
-                }).AddTo(disposable);
+                disposable.Add(bucketConnection.Where(change => change.Kind != DataChangeType.Initial).Subscribe(
+                    change =>
+                    {
+                        Assert.AreEqual(DataChangeType.Insert, change.Kind);
+                        disposable.Clear();
+                        cancellationTokenSource.Cancel();
+                    }));
 
                 await UniTask.Delay(1);
-                Observable.NextFrame(FrameCountType.EndOfFrame).Subscribe(unit =>
+                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable().Subscribe(unit =>
                     bucketService.Data.InsertAsync(new Id(newBucket.Id), new TestBucketDataModel("t1", "d1")));
 
                 disposable.Add(bucketConnection);
@@ -208,17 +210,17 @@ namespace SpicaSDK.Tests.Editor.Integration
                     {
                         Assert.AreEqual(DataChangeType.Insert, change.Kind);
                         Assert.AreEqual("socket1", change.Document.Title);
-                    }).First().ToUniTask();
+                    }).FirstAsync().ToUniTask();
 
-                await UniTask.Delay(1);
+                await UniTask.NextFrame();
                 var serverResponse = bucketConnection.Insert(new TestBucketDataModel("socket1", "socketDesc1")).Do(
                     change =>
                     {
                         Assert.AreEqual(DataChangeType.Response, change.Kind);
                         Assert.AreEqual(HttpStatusCode.Created, change.StatusCode);
-                    }).First().ToUniTask();
+                    }).FirstAsync().ToUniTask();
 
-                UniTask.WhenAll(task1, serverResponse).ContinueWith(tuple =>
+                UniTask.WhenAll(task1, serverResponse).ContinueWith(_ =>
                 {
                     disposable.Clear();
                     cancellationTokenSource.Cancel();
