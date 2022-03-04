@@ -132,9 +132,9 @@ namespace SpicaSDK.Services
         {
             public static class Firehose
             {
-                public static UniTask<FirehoseConnection<T>> Connect<T>(QueryParams queryParams)
+                public static UniTask<FirehoseConnection<T>> Connect<T>(QueryParams queryParams, string filter = "")
                 {
-                    return firehose.Connect<T>(queryParams);
+                    return firehose.Connect<T>(queryParams, filter);
                 }
             }
         }

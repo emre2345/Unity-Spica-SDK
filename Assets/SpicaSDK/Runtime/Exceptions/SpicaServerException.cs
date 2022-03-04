@@ -11,5 +11,9 @@ namespace SpicaSDK.Services.Exceptions
         public SpicaServerException(string message) : base(message)
         {
         }
+
+        public SpicaServerException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }
