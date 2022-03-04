@@ -14,15 +14,20 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
     {
         private IObservable<T> sharedMessage;
 
-        public FirehoseConnection(IWebSocket socket) : base(socket)
+        public FirehoseConnection(IWebSocket socket, string filter) : base(socket)
         {
             sharedMessage = socket.ObserveMessage
-                .Select(s =>
-                {
-                    JObject response = JsonConvert.DeserializeObject<JObject>(s);
-                    return JsonConvert.DeserializeObject<T>(response["data"].ToString());
-                })
-                .Do(s => SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Received message: {s}")).Share();
+                .Select(s => JsonConvert.DeserializeObject<JObject>(s)).Where(
+                    response =>
+                    {
+                        if (!string.IsNullOrEmpty(filter))
+                            return response["name"].Value<string>().Equals(filter);
+
+                        return true;
+                    })
+                .Select(response => { return JsonConvert.DeserializeObject<T>(response["data"].ToString()); })
+                .Do(s => SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Received message: {s}"))
+                .Share();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
@@ -35,6 +40,13 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
         {
             SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Sending message: {message}");
             await SendMessageAsync(message.ToString());
+        }
+
+        public override UniTask DisconnectAsync()
+        {
+            disconnected = true;
+            Dispose();
+            return UniTask.CompletedTask;
         }
     }
 }

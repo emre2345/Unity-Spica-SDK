@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using NativeWebSocket;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Services.Exceptions;
 using UniRx;
 using IWebSocket = SpicaSDK.Runtime.WebSocketClient.Interfaces.IWebSocket;
 
@@ -95,9 +96,16 @@ namespace SpicaSDK.Services.WebSocketClient
             return socket.Close().AsUniTask();
         }
 
-        public UniTask SendText(string message)
+        public async UniTask SendText(string message)
         {
-            return socket.SendText(message).AsUniTask();
+            try
+            {
+                await socket.SendText(message);
+            }
+            catch (ObjectDisposedException e)
+            {
+                throw new SpicaServerException(e.Message, e);
+            }
         }
     }
 }
