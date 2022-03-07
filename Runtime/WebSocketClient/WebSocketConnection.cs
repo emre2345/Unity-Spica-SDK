@@ -11,19 +11,19 @@ namespace SpicaSDK.Services.WebSocketClient
     public class WebSocketConnection : IWebSocketConnection
     {
         protected IWebSocket socket;
-        protected CompositeDisposable subscriptions;
+        // protected CompositeDisposable subscriptions;
 
         protected bool disconnected;
         private Predicate<WebSocketCloseCode> reconnectionCondition;
 
         public WebSocketConnection(IWebSocket socket)
         {
-            subscriptions = new CompositeDisposable(16);
+            // subscriptions = new CompositeDisposable(16);
 
             this.socket = socket;
 
-            socket.ObserveClose.Where(code => reconnectionCondition?.Invoke(code) ?? false)
-                .Where(code => code != WebSocketCloseCode.Normal).Subscribe(code => Dispose());
+            // socket.ObserveClose.Where(code => reconnectionCondition?.Invoke(code) ?? false)
+                // .Where(code => code != WebSocketCloseCode.Normal).Subscribe(code => Dispose());
         }
 
         public void ReconnectWhen(Predicate<WebSocketCloseCode> condition)
@@ -35,14 +35,14 @@ namespace SpicaSDK.Services.WebSocketClient
         public virtual async UniTask DisconnectAsync()
         {
             disconnected = true;
-            Dispose();
+            // Dispose();
             await socket.Close();
         }
 
-        protected void Dispose()
-        {
-            subscriptions.Clear();
-        }
+        // protected void Dispose()
+        // {
+        //     subscriptions.Clear();
+        // }
 
         public async UniTask SendMessageAsync(string message)
         {

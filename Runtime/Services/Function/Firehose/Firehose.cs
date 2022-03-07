@@ -5,6 +5,7 @@ using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
 using SpicaSDK.Runtime.WebSocketClient.Interfaces;
 using UniRx;
+using UniRx.Diagnostics;
 using UnityEngine;
 using IWebSocket = SpicaSDK.Runtime.WebSocketClient.Interfaces.IWebSocket;
 
@@ -42,7 +43,9 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
                     });
 
             var connection = new FirehoseConnection<T>(webSocket, filter);
-            connection.DoOnSubscribe(() => subscriptionCount.Value++).DoOnTerminate(() => subscriptionCount.Value--);
+            connection.Skip(1).DoOnSubscribe(() => subscriptionCount.Value++)
+                .DoOnTerminate(() => subscriptionCount.Value--)
+                .DoOnCancel(() => subscriptionCount.Value--).Subscribe();
             return connection;
         }
     }

@@ -12,11 +12,14 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
 {
     public class FirehoseConnection<T> : WebSocketConnection, IFirehoseConnection<T>
     {
-        private IObservable<T> sharedMessage;
+        private Subject<T> sharedMessage;
+        private IDisposable socketSubscription;
 
         public FirehoseConnection(IWebSocket socket, string filter) : base(socket)
         {
-            sharedMessage = socket.ObserveMessage
+            sharedMessage = new Subject<T>();
+
+            socketSubscription = socket.ObserveMessage
                 .Select(s => JsonConvert.DeserializeObject<JObject>(s)).Where(
                     response =>
                     {
@@ -27,13 +30,12 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
                     })
                 .Select(response => { return JsonConvert.DeserializeObject<T>(response["data"].ToString()); })
                 .Do(s => SpicaLogger.Instance.Log($"[{nameof(FirehoseConnection<T>)}] Received message: {s}"))
-                .Share();
+                .Share().Subscribe(sharedMessage);
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            return sharedMessage.Subscribe(observer)
-                .AddTo(subscriptions);
+            return sharedMessage.Subscribe(observer);
         }
 
         public async UniTask SendMessage(FirehoseMessage message)
@@ -45,7 +47,9 @@ namespace Plugins.SpicaSDK.Runtime.Services.Function.Firehose
         public override UniTask DisconnectAsync()
         {
             disconnected = true;
-            Dispose();
+            socketSubscription.Dispose();
+            sharedMessage.OnCompleted();
+            // Dispose();
             return UniTask.CompletedTask;
         }
     }
