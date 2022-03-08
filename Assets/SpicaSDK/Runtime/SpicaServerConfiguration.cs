@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SpicaSDK.Services
 {
@@ -14,15 +15,15 @@ namespace SpicaSDK.Services
             {
                 if (instance == null)
                 {
-                    instance = Resources.Load<SpicaServerConfiguration>(nameof(SpicaServerConfiguration));
+                    instance = Resources.LoadAll<SpicaServerConfiguration>(string.Empty)[0];
                 }
 
                 return instance;
             }
         }
 
-        [SerializeField] private string rootUrl;
-
-        public string RootUrl => rootUrl;
+        [SerializeField] protected string prodRootUrl;
+        
+        public virtual string RootUrl => prodRootUrl;
     }
 }
