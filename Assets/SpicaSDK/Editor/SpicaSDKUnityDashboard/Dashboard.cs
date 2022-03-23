@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using CsCodeGenerator;
 using CsCodeGenerator.Enums;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ArchetypeAttributes;
 using SpicaSDK.Editor.Editor_Toolbox.Scripts.Attributes.ToolboxAttributes.ConditionAttributes;
@@ -151,10 +152,11 @@ public class Dashboard : ScriptableObject
             switch (relationType)
             {
                 case "onetoone":
-                    return Array.Find(buckets, b => b.Id.Equals(relationBucketId)).Title +
+                    return MakeSafeForCode(Array.Find(buckets, b => b.Id.Equals(relationBucketId)).Title) +
                            "Data";
+                    break;
                 case "onetomany":
-                    return Array.Find(buckets, b => b.Id.Equals(relationBucketId)).Title +
+                    return MakeSafeForCode(Array.Find(buckets, b => b.Id.Equals(relationBucketId)).Title) +
                            "Data[]";
             }
         }
@@ -174,6 +176,8 @@ public class Dashboard : ScriptableObject
                 return nameof(DateTime);
             case "location":
                 return nameof(Point);
+            case "array":
+                return nameof(JArray);
             default:
                 throw new Exception($"Could not parse dataType: {propertyType}");
         }
