@@ -53,7 +53,7 @@ namespace SpicaSDK.Services.Orm
             return SpicaSDK.Bucket.Data.Get<BucketDataModelType>(new Id(BucketId), documentId, queryParams);
         }
 
-        public UniTask<BucketDataModelType[]> GetAll()
+        public virtual UniTask<BucketDataModelType[]> GetAll()
         {
             return SpicaSDK.Bucket.Data.GetAll<BucketDataModelType>(new Id(BucketId), new QueryParams());
         }
