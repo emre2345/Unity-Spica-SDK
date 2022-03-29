@@ -7,7 +7,7 @@ namespace SpicaSDK.Services.Models
         private static Id empty = new Id(String.Empty);
         public static Id Empty => empty;
 
-        public static Id From(string value) => new Id(value);
+        public static Id From(object value) => new Id(value.ToString());
         
         public readonly string Value;
 
