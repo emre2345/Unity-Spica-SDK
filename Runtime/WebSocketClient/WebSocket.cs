@@ -16,19 +16,30 @@ namespace SpicaSDK.Services.WebSocketClient
         private IDisposable update;
         private ReactiveProperty<WebSocketState> state;
 
+        private Subject<string> message;
+        private Subject<Unit> open;
+        private Subject<string> error;
+        private Subject<WebSocketCloseCode> close;
+
         public WebSocket(string url)
         {
             this.url = url;
+
+            message = new Subject<string>();
+            open = new Subject<Unit>();
+            error = new Subject<string>();
+            close = new Subject<WebSocketCloseCode>();
         }
 
-        public IObservable<Unit> ObserveOpen { get; private set; }
-        public IObservable<string> ObserveError { get; private set; }
-        public IObservable<string> ObserveMessage { get; private set; }
-        public IObservable<WebSocketCloseCode> ObserveClose { get; private set; }
+        public IObservable<Unit> ObserveOpen => open;
+        public IObservable<string> ObserveError => error;
+        public IObservable<string> ObserveMessage => message;
+        public IObservable<WebSocketCloseCode> ObserveClose => close;
 
         public IObservable<WebSocketState> ObserveState => state;
 
         public WebSocketState State => state.Value;
+
 
         public UniTask Connect()
         {
@@ -59,23 +70,22 @@ namespace SpicaSDK.Services.WebSocketClient
 
         void CreateObservables()
         {
-            ObserveOpen = Observable.FromEvent<WebSocketOpenEventHandler, Unit>(
+            Observable.FromEvent<WebSocketOpenEventHandler, Unit>(
                 action => () => action.Invoke(Unit.Default),
-                action => socket.OnOpen += action, action => socket.OnOpen -= action).Share();
+                action => socket.OnOpen += action, action => socket.OnOpen -= action).Subscribe(open);
 
-            ObserveError = Observable.FromEvent<WebSocketErrorEventHandler, string>(
+            Observable.FromEvent<WebSocketErrorEventHandler, string>(
                 action => (s) => action.Invoke(s),
-                action => socket.OnError += action, action => socket.OnError -= action).Share();
+                action => socket.OnError += action, action => socket.OnError -= action).Subscribe(error);
 
-            ObserveMessage =
-                Observable.FromEvent<WebSocketMessageEventHandler, string>(action =>
-                        (data => action.Invoke(System.Text.Encoding.UTF8.GetString(data))),
-                    handler => socket.OnMessage += handler, handler => socket.OnMessage -= handler).Do(s =>
-                    SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}")).Share();
+            Observable.FromEvent<WebSocketMessageEventHandler, string>(action =>
+                    (data => action.Invoke(System.Text.Encoding.UTF8.GetString(data))),
+                handler => socket.OnMessage += handler, handler => socket.OnMessage -= handler).Do(s =>
+                SpicaLogger.Instance.Log($"[ {nameof(WebSocketClient)} ] - Message Received: {s}")).Subscribe(message);
 
-            ObserveClose = Observable.FromEvent<WebSocketCloseEventHandler, WebSocketCloseCode>(action => action.Invoke,
+            Observable.FromEvent<WebSocketCloseEventHandler, WebSocketCloseCode>(action => action.Invoke,
                 action => socket.OnClose += action,
-                action => socket.OnClose -= action).Share();
+                action => socket.OnClose -= action).Subscribe(close);
 
             socket.ObserveEveryValueChanged(webSocket => webSocket.State)
                 .Subscribe(socketState => state.Value = socketState);
