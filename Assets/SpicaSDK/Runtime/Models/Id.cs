@@ -1,4 +1,5 @@
 using System;
+using SpicaSDK.Runtime.Utils;
 
 namespace SpicaSDK.Services.Models
 {
@@ -23,7 +24,11 @@ namespace SpicaSDK.Services.Models
 
         public override bool Equals(object obj)
         {
-            return obj is Id other && Equals(other);
+            if (obj is Id other)
+                return Equals(other);
+            
+            SpicaLogger.Instance.Log("Comparing id with non id object");
+            return Equals(From(obj));
         }
 
         public override int GetHashCode()
