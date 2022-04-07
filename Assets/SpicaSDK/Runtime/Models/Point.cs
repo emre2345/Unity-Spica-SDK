@@ -20,8 +20,8 @@ namespace SpicaSDK.Services.Models
         [JsonConstructor]
         public Point(float[] coordinates)
         {
-            Latitude = coordinates[0];
-            Longitude = coordinates[1];
+            Longitude = coordinates[0];
+            Latitude = coordinates[1];
         }
     }
 
@@ -34,7 +34,7 @@ namespace SpicaSDK.Services.Models
                 Point p = (Point)value;
                 JObject pObj = new JObject();
                 pObj.Add("type", nameof(Point));
-                pObj.Add("coordinates", JToken.FromObject(new float[] { p.Latitude, p.Longitude }));
+                pObj.Add("coordinates", JToken.FromObject(new float[] { p.Longitude, p.Latitude }));
                 writer.WriteValue(pObj);
             }
         }
