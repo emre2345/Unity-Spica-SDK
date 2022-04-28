@@ -5,6 +5,7 @@ using System.Text;
 using Cysharp.Threading.Tasks;
 using SpicaSDK.Interfaces;
 using SpicaSDK.Runtime.Utils;
+using SpicaSDK.Services.Exceptions;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -32,7 +33,8 @@ namespace SpicaSDK
         {
             return CreateAndSendRequest(() =>
             {
-                SpicaLogger.Instance.Log($"[{nameof(HttpClient)}] Post request: {request.Url}\nBody:\n{request.Payload}");
+                SpicaLogger.Instance.Log(
+                    $"[{nameof(HttpClient)}] Post request: {request.Url}\nBody:\n{request.Payload}");
                 var req = new UnityWebRequest(request.Url, "POST");
                 var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(request.Payload));
                 uploadHandler.contentType = "application/json";
@@ -128,11 +130,10 @@ namespace SpicaSDK
             }
             catch (UnityWebRequestException e)
             {
-                SpicaLogger.Instance.LogError(nameof(HttpClient),
-                    $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {e.ResponseCode}\nResponse Text: {e.Text}");
-                var response = new Response((HttpStatusCode)e.ResponseCode, string.Empty);
+                SpicaLogger.Instance.Log(nameof(HttpClient),
+                    $"[{nameof(HttpClient)} - RequestException] Received Response:\nUrl: {req.url}\nResponse Code: {e.ResponseCode}\nResponse Text: {e.Text}");
                 req.Dispose();
-                return response;
+                throw new SpicaWebRequestException(e);
             }
         }
     }
