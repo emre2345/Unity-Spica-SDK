@@ -123,7 +123,8 @@ namespace SpicaSDK
                 SpicaLogger.Instance.Log(
                     $"[{nameof(HttpClient)}] Received Response:\nUrl: {req.url}\nResponse Code: {operation.responseCode}\nResponse:\n{operation.downloadHandler.text}");
 
-                var response = new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text);
+                var response = new Response((HttpStatusCode)operation.responseCode, operation.downloadHandler.text,
+                    operation.GetResponseHeaders());
 
                 req.Dispose();
                 return response;
