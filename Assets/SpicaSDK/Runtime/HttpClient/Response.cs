@@ -13,6 +13,12 @@ namespace SpicaSDK
 
         public bool Success => (int)StatusCode >= 200 && (int)StatusCode < 300;
 
+
+        public Response(HttpStatusCode statusCode, string text) : this(statusCode, text,
+            new Dictionary<string, string>())
+        {
+        }
+
         public Response(HttpStatusCode statusCode, string text, Dictionary<string, string> headers)
         {
             StatusCode = statusCode;
