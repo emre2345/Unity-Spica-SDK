@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
 using System.Net;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using UniRx;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -210,7 +209,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     {
                         Assert.AreEqual(DataChangeType.Insert, change.Kind);
                         Assert.AreEqual("socket1", change.Document.Title);
-                    }).FirstAsync().ToUniTask();
+                    }).ToUniTask();
 
                 await UniTask.NextFrame();
                 var serverResponse = bucketConnection.Insert(new TestBucketDataModel("socket1", "socketDesc1")).Do(
@@ -218,7 +217,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     {
                         Assert.AreEqual(DataChangeType.Response, change.Kind);
                         Assert.AreEqual(HttpStatusCode.Created, change.StatusCode);
-                    }).FirstAsync().ToUniTask();
+                    }).ToUniTask();
 
                 UniTask.WhenAll(task1, serverResponse).ContinueWith(_ =>
                 {
