@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reactive.Linq;
+using UniRx;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
