@@ -71,7 +71,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                 var documentWatch =
                     await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id), data.Id);
 
-                disposable.Add(documentWatch.Do(model => Debug.Log(model.ToString())).Skip(1).Subscribe(
+                disposable.Add(UniRx.ObservableExtensions.Subscribe(documentWatch.Do(model => Debug.Log(model.ToString())).Skip(1),
                     delegate(TestBucketDataModel model)
                     {
                         Assert.AreEqual(newTitle, model.Title);
@@ -79,7 +79,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     }));
 
                 await UniTask.Delay(1);
-                UniTask.NextFrame().ToObservable().Subscribe(_ =>
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame().ToObservable(), _ =>
                 {
                     bucketService.Data.ReplaceAsync(new Id(newBucket.Id), data.Id,
                         new TestBucketDataModel(newTitle, data.Description));
@@ -107,7 +107,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                 var documentWatch =
                     await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id), data.Id);
 
-                disposable.Add(documentWatch.Subscribe(model => { },
+                disposable.Add(UniRx.ObservableExtensions.Subscribe(documentWatch, model => { },
                     () =>
                     {
                         Debug.Log("Subscription completed automatically because of deletion");
@@ -117,7 +117,7 @@ namespace SpicaSDK.Tests.Editor.Integration
 
 
                 await UniTask.Delay(1);
-                UniTask.NextFrame(PlayerLoopTiming.LastUpdate).ToObservable().Subscribe(_ =>
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.LastUpdate).ToObservable(), _ =>
                 {
                     bucketService.Data.RemoveAsync(new Id(newBucket.Id), data.Id);
                 });
@@ -141,7 +141,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     await bucketService.Realtime.WatchDocumentAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new Id("nonExistingId"));
 
-                disposable.Add(documentWatch.Subscribe(model => { },
+                disposable.Add(UniRx.ObservableExtensions.Subscribe(documentWatch, model => { },
                     () =>
                     {
                         Debug.Log("Subscription dropped automatically because of non existing data");
@@ -170,7 +170,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(newBucket.Id),
                         new QueryParams());
 
-                disposable.Add(bucketConnection.Where(change => change.Kind != DataChangeType.Initial).Subscribe(
+                disposable.Add(UniRx.ObservableExtensions.Subscribe(bucketConnection.Where(change => change.Kind != DataChangeType.Initial),
                     change =>
                     {
                         Assert.AreEqual(DataChangeType.Insert, change.Kind);
@@ -179,7 +179,7 @@ namespace SpicaSDK.Tests.Editor.Integration
                     }));
 
                 await UniTask.Delay(1);
-                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable().Subscribe(unit =>
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable(), _ =>
                     bucketService.Data.InsertAsync(new Id(newBucket.Id), new TestBucketDataModel("t1", "d1")));
 
                 disposable.Add(bucketConnection);

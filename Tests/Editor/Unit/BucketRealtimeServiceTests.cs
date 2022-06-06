@@ -79,13 +79,14 @@ namespace SpicaSDK.Tests.Editor.Unit
                 string newTitle = "newTitle";
 
                 CancellationTokenSource source = new CancellationTokenSource();
-                documentConnection.Subscribe(message =>
+                UniRx.ObservableExtensions.Subscribe(documentConnection, message =>
                 {
                     Assert.IsTrue(message.Title.Equals(newTitle));
                     source.Cancel();
                 });
 
-                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable().Subscribe(_ => firstData.Title = newTitle);
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable(),
+                    _ => firstData.Title = newTitle);
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -121,7 +122,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                 // ---
 
                 CancellationTokenSource source = new CancellationTokenSource();
-                bucketConnection.Subscribe(message =>
+                UniRx.ObservableExtensions.Subscribe(bucketConnection, message =>
                 {
                     Assert.IsTrue(message.Kind == DataChangeType.Insert);
                     source.Cancel();
@@ -129,9 +130,8 @@ namespace SpicaSDK.Tests.Editor.Unit
 
                 // ---
 
-                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable().Subscribe(
-                    unit => datas.Add(newData)
-                );
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable(),
+                    _ => datas.Add(newData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -170,7 +170,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
-                bucketConnection.Subscribe(message =>
+                UniRx.ObservableExtensions.Subscribe(bucketConnection, message =>
                 {
                     Assert.IsTrue(message.Kind == DataChangeType.Insert);
                     Assert.IsTrue(message.Document.Title == newData.Title &&
@@ -178,7 +178,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                UniTask.DelayFrame(5).ToObservable().Subscribe(_ => bucketConnection.Insert(newData));
+                UniRx.ObservableExtensions.Subscribe(UniTask.DelayFrame(5).ToObservable(),
+                    _ => bucketConnection.Insert(newData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -213,7 +214,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
-                bucketConnection.Subscribe(change =>
+                UniRx.ObservableExtensions.Subscribe(bucketConnection, change =>
                 {
                     Assert.IsTrue(change.Kind == DataChangeType.Delete);
                     Assert.IsTrue(change.Document.Title == deletedData.Title &&
@@ -221,8 +222,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
-                    .Subscribe(unit => bucketConnection.Delete(deletedData));
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable(),
+                    _ => bucketConnection.Delete(deletedData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -256,15 +257,16 @@ namespace SpicaSDK.Tests.Editor.Unit
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
-                bucketConnection.Subscribe(change =>
+                UniRx.ObservableExtensions.Subscribe(bucketConnection, change =>
                 {
                     Assert.IsTrue(change.Kind == DataChangeType.Update);
                     Assert.IsTrue(change.Document.Title == newTitle);
                     source.Cancel();
                 });
 
-                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
-                    .Subscribe(unit => bucketConnection.Patch(patchedData));
+
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable(),
+                    _ => bucketConnection.Patch(patchedData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
@@ -297,7 +299,7 @@ namespace SpicaSDK.Tests.Editor.Unit
                     await bucketService.Realtime.ConnectToBucketAsync<TestBucketDataModel>(new Id(TestBucketId),
                         new QueryParams());
 
-                bucketConnection.Subscribe(change =>
+                UniRx.ObservableExtensions.Subscribe(bucketConnection, change =>
                 {
                     Assert.IsTrue(change.Kind == DataChangeType.Replace);
                     Assert.IsTrue(change.Document.Title == replacedData.Title);
@@ -305,8 +307,8 @@ namespace SpicaSDK.Tests.Editor.Unit
                     source.Cancel();
                 });
 
-                UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
-                    .Subscribe(unit => bucketConnection.Replace(replacedData));
+                UniRx.ObservableExtensions.Subscribe(UniTask.NextFrame(PlayerLoopTiming.Update).ToObservable()
+                    , _ => bucketConnection.Replace(replacedData));
 
                 await UniTask.WaitUntilCanceled(source.Token).Timeout(TimeSpan.FromSeconds(1));
             });
